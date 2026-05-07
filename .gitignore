@@ -2,10 +2,16 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,windows
 
 
-##직접추가해준 부분
-#commit 용 colab
-For_github_commit.ipynb #{커밋용으로 생성한 코랩이름 }
+## 직접 추가해준 부분
+# commit 용 colab
+For_github_commit.ipynb  # 커밋용으로 생성한 코랩 이름
 
+# Python virtual environment
+venv/
+.venv/
+
+# Chroma DB
+chroma_db/
 
 
 ### macOS ###
@@ -16,7 +22,6 @@ For_github_commit.ipynb #{커밋용으로 생성한 코랩이름 }
 
 # Icon must end with two \r
 Icon
-
 
 # Thumbnails
 ._*
