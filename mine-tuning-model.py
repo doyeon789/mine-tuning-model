@@ -14,6 +14,7 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 import torch
 import chromadb
+import shutil
 import gradio as gr
 
 # ───────────────────────────────────────────────
@@ -48,10 +49,9 @@ def build_or_load_chroma(embedding_model, ds):
     client = chromadb.PersistentClient(path=str(CHROMA_DIR))
     existing = [c.name for c in client.list_collections()]
 
-    if COLLECTION_NAME in existing:
-        collection = client.get_collection(name=COLLECTION_NAME)
-        print(f"기존 컬렉션 로드 완료: {collection.count()}개 데이터")
-        return collection
+    if CHROMA_DIR.exists():
+        print(f"기존 chroma_db 삭제 중...")
+        shutil.rmtree(CHROMA_DIR)
 
     print("[ChromaDB 구축 중...]")
     collection = client.create_collection(name=COLLECTION_NAME)
