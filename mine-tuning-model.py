@@ -1,8 +1,3 @@
-"""
-mine-tuning-model - Windows 로컬 버전
-Google Colab 의존성 제거, 윈도우 데스크탑에서 바로 실행 가능
-"""
-
 # ───────────────────────────────────────────────
 # 0. 필수 라이브러리 설치 (처음 실행 시만)
 # ───────────────────────────────────────────────
@@ -15,11 +10,18 @@ Google Colab 의존성 제거, 윈도우 데스크탑에서 바로 실행 가능
 # GPU(CUDA)가 있다면 torch를 따로 설치:
 #   pip install torch --index-url https://download.pytorch.org/whl/cu121
 
+from pathlib import Path
+from datasets import load_dataset
+from sentence_transformers import SentenceTransformer
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+import torch
+import gradio as gr
+
+
+
 # ───────────────────────────────────────────────
 # 1. 경로 설정
 # ───────────────────────────────────────────────
-from pathlib import Path
-
 BASE_DIR   = Path(__file__).parent          # 이 .py 파일이 있는 폴더
 CHROMA_DIR = BASE_DIR / "chroma_db"        # ChromaDB 영구 저장 경로
 CHROMA_DIR.mkdir(exist_ok=True)
@@ -30,7 +32,6 @@ print(f"ChromaDB 경로 : {CHROMA_DIR}")
 # ───────────────────────────────────────────────
 # 2. 데이터 로드
 # ───────────────────────────────────────────────
-from datasets import load_dataset
 
 print("\n[데이터 로드 중...]")
 ds = load_dataset("lparkourer10/minecraft-wiki")
@@ -46,7 +47,6 @@ for i in range(3):
 # ───────────────────────────────────────────────
 # 3. 임베딩 모델 로드
 # ───────────────────────────────────────────────
-from sentence_transformers import SentenceTransformer
 
 print("\n[임베딩 모델 로드 중...]")
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -108,8 +108,7 @@ for i, (doc, meta) in enumerate(zip(docs, metas)):
 # ───────────────────────────────────────────────
 # 6. LLM 로드 (GPU/CPU 자동 감지)
 # ───────────────────────────────────────────────
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
-import torch
+
 
 MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"
 
@@ -170,14 +169,13 @@ print(response)
 # ───────────────────────────────────────────────
 # 8. Gradio UI 실행
 # ───────────────────────────────────────────────
-import gradio as gr
 
 def chat(message, history):
     return rag_answer(message)
 
 demo = gr.ChatInterface(
     fn=chat,
-    title="⛏️ Minecraft Guide LLM",
+    title="Minecraft Guide LLM",
     description="Minecraft Wiki 기반 AI 가이드에게 무엇이든 물어보세요!",
     examples=[
         "How to find diamonds?",
