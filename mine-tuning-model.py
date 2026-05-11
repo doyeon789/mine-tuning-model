@@ -47,14 +47,45 @@ def load_embedding_model():
 
 def build_or_load_chroma_test(embedding_model, ds):
     CHROMA_DIR.mkdir(exist_ok=True)
-    client = chromadb.PersistentClient(path=str(CHROMA_DIR))
-    existing = [c.name for c in client.list_collections()]
 
+    # 기존 chroma_db 삭제 (Windows 호환)
     if CHROMA_DIR.exists():
         print(f"기존 chroma_db 삭제 중...")
-        shutil.rmtree(CHROMA_DIR)
+        import gc
+        gc.collect()  # 가비지 컬렉션으로 파일 핸들 해제
+        try:
+            shutil.rmtree(CHROMA_DIR)
+        except PermissionError:
+            # 삭제 안되면 그냥 기존 컬렉션 재사용
+            print("기존 chroma_db 재사용 중...")
+            client = chromadb.PersistentClient(path=str(CHROMA_DIR))
+            try:
+                client.delete_collection(name=COLLECTION_NAME)
+            except:
+                pass
+            collection = client.create_collection(name=COLLECTION_NAME)
+            # 아래 임베딩 구축 코드로 이어서 실행
+            answers   = ds["train"]["answer"][:SAMPLE_SIZE]
+            questions = ds["train"]["question"][:SAMPLE_SIZE]
+            urls      = ds["train"]["url"][:SAMPLE_SIZE]
 
-    print("[ChromaDB 구축 중...]")
+            batch_size = 500
+            for i in range(0, SAMPLE_SIZE, batch_size):
+                batch_answers = answers[i:i+batch_size]
+                embeddings = embedding_model.encode(batch_answers, show_progress_bar=True).tolist()
+                collection.add(
+                    documents=batch_answers,
+                    embeddings=embeddings,
+                    metadatas=[{"question": q, "url": u}
+                               for q, u in zip(questions[i:i+batch_size], urls[i:i+batch_size])],
+                    ids=[str(j) for j in range(i, i+len(batch_answers))]
+                )
+                print(f"  {min(i+batch_size, SAMPLE_SIZE)}/{SAMPLE_SIZE} 완료")
+            print(f"총 {collection.count()}개 저장됨")
+            return collection
+
+    # 정상 삭제됐을 때
+    client     = chromadb.PersistentClient(path=str(CHROMA_DIR))
     collection = client.create_collection(name=COLLECTION_NAME)
 
     answers   = ds["train"]["answer"][:SAMPLE_SIZE]
@@ -83,7 +114,13 @@ def build_or_load_chroma(embedding_model, ds):
     # 기존 chroma_db 삭제
     if CHROMA_DIR.exists():
         print(f"기존 chroma_db 삭제 중...")
-        shutil.rmtree(CHROMA_DIR)
+        import gc
+        gc.collect()
+        try:
+            shutil.rmtree(CHROMA_DIR)
+        except PermissionError:
+            print("⚠️ 삭제 실패 — 탐색기에서 chroma_db 폴더를 직접 삭제 후 재실행해주세요.")
+            raise
 
     client     = chromadb.PersistentClient(path=str(CHROMA_DIR))
     collection = client.create_collection(name=COLLECTION_NAME)
@@ -115,7 +152,6 @@ def build_or_load_chroma(embedding_model, ds):
 
     print(f"🎉 완료! 총 {collection.count()}개 저장됨")
     return collection
-
 
 def load_llm():
     if torch.cuda.is_available():
@@ -196,8 +232,8 @@ def main():
 
     ds              = load_data()
     embedding_model = load_embedding_model()
-    # collection      = build_or_load_chroma_test(embedding_model, ds)
-    collection      = build_or_load_chroma(embedding_model, ds)
+    collection      = build_or_load_chroma_test(embedding_model, ds)
+    # collection      = build_or_load_chroma(embedding_model, ds)
     llm             = load_llm()
 
     # 동작 확인용 테스트
