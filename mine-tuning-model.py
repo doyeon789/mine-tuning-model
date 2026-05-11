@@ -12,6 +12,7 @@ from pathlib import Path
 from datasets import load_dataset
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+from tqdm import tqdm
 import torch
 import chromadb
 import shutil
@@ -44,7 +45,7 @@ def load_embedding_model():
     return model
 
 
-def build_or_load_chroma(embedding_model, ds):
+def build_or_load_chroma_test(embedding_model, ds):
     CHROMA_DIR.mkdir(exist_ok=True)
     client = chromadb.PersistentClient(path=str(CHROMA_DIR))
     existing = [c.name for c in client.list_collections()]
@@ -74,6 +75,45 @@ def build_or_load_chroma(embedding_model, ds):
         print(f"  {min(i+batch_size, SAMPLE_SIZE)}/{SAMPLE_SIZE} 완료")
 
     print(f"총 {collection.count()}개 저장됨")
+    return collection
+
+def build_or_load_chroma(embedding_model, ds):
+    CHROMA_DIR.mkdir(exist_ok=True)
+
+    # 기존 chroma_db 삭제
+    if CHROMA_DIR.exists():
+        print(f"기존 chroma_db 삭제 중...")
+        shutil.rmtree(CHROMA_DIR)
+
+    client     = chromadb.PersistentClient(path=str(CHROMA_DIR))
+    collection = client.create_collection(name=COLLECTION_NAME)
+
+    # 전체 데이터
+    answers   = ds["train"]["answer"]
+    questions = ds["train"]["question"]
+    urls      = ds["train"]["url"]
+    total     = len(answers)
+    print(f"[ChromaDB 전체 구축 중... 총 {total}개]")
+
+    batch_size = 500
+    for i in tqdm(range(0, total, batch_size), desc="벡터 DB 구축"):
+        batch_answers   = answers[i:i+batch_size]
+        batch_questions = questions[i:i+batch_size]
+        batch_urls      = urls[i:i+batch_size]
+
+        embeddings = embedding_model.encode(
+            batch_answers,
+            show_progress_bar=False
+        ).tolist()
+
+        collection.add(
+            documents=batch_answers,
+            embeddings=embeddings,
+            metadatas=[{"question": q, "url": u} for q, u in zip(batch_questions, batch_urls)],
+            ids=[str(j) for j in range(i, i+len(batch_answers))]
+        )
+
+    print(f"🎉 완료! 총 {collection.count()}개 저장됨")
     return collection
 
 
@@ -156,6 +196,7 @@ def main():
 
     ds              = load_data()
     embedding_model = load_embedding_model()
+    # collection      = build_or_load_chroma_test(embedding_model, ds)
     collection      = build_or_load_chroma(embedding_model, ds)
     llm             = load_llm()
 
