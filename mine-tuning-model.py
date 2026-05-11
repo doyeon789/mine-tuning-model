@@ -157,12 +157,10 @@ def load_llm():
     if torch.cuda.is_available():
         dtype       = torch.float16
         device_arg  = {"device_map": "auto"}
-        pipe_device = 0
         print(f"GPU 사용: {torch.cuda.get_device_name(0)}")
     else:
         dtype       = torch.float32
         device_arg  = {}
-        pipe_device = -1
         print("CPU 사용 (속도가 느릴 수 있습니다)")
 
     print("[LLM 로드 중...]")
@@ -174,7 +172,6 @@ def load_llm():
         tokenizer=tokenizer,
         max_new_tokens=512,
         do_sample=False,
-        device=pipe_device,
     )
     print("LLM 로드 완료")
     return llm
