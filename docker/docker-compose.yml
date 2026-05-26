@@ -1,0 +1,33 @@
+services:
+  sglang:
+    image: lmsysorg/sglang:latest
+    container_name: sglang-server
+    ports:
+      - "30000:30000"
+    volumes:
+      - hf-cache:/root/.cache/huggingface
+    env_file:
+      - .env
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+    command: >
+      python -m sglang.launch_server
+      --model-path Qwen/Qwen3-8B
+      --host 0.0.0.0
+      --port 30000
+      --dtype bfloat16
+      --quantization fp8
+      --mem-fraction-static 0.88
+      --reasoning-parser qwen3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+volumes:
+  hf-cache:
+    driver: local
