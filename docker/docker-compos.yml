@@ -1,0 +1,27 @@
+services:
+  sglang:
+    image: lmsysorg/sglang:latest
+    container_name: sglang-server
+    ports:
+      - "30000:30000"
+    volumes:
+      # 다운로드된 모델 캐시를 로컬에 저장 (재실행 시 재다운로드 방지)
+      - C:/models:/root/.cache/huggingface
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+    command: >
+      python -m sglang.launch_server
+      --model-path Qwen/Qwen3-8B
+      --host 0.0.0.0
+      --port 30000
+      --dtype bfloat16
+      --mem-fraction-static 0.85
+      --reasoning-parser qwen3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
