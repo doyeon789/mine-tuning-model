@@ -5,8 +5,9 @@ services:
     ports:
       - "30000:30000"
     volumes:
-      # 다운로드된 모델 캐시를 로컬에 저장 (재실행 시 재다운로드 방지)
-      - C:/models:/root/.cache/huggingface
+      - hf-cache:/root/.cache/huggingface
+    env_file:
+      - .env
     environment:
       - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
     command: >
@@ -15,7 +16,8 @@ services:
       --host 0.0.0.0
       --port 30000
       --dtype bfloat16
-      --mem-fraction-static 0.85
+      --quantization fp8
+      --mem-fraction-static 0.88
       --reasoning-parser qwen3
     deploy:
       resources:
@@ -25,3 +27,7 @@ services:
               count: 1
               capabilities: [gpu]
     restart: unless-stopped
+
+volumes:
+  hf-cache:
+    driver: local
