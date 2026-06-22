@@ -28,6 +28,22 @@ services:
               capabilities: [gpu]
     restart: unless-stopped
 
+  rag:
+    build:
+      context: .
+      dockerfile: Dockerfile.rag
+    container_name: rag-server
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - SGLANG_URL=http://sglang:30000
+    depends_on:
+      - sglang
+    restart: unless-stopped
+
 volumes:
   hf-cache:
     driver: local
