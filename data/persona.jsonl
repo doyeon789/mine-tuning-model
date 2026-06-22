@@ -1,54 +1,300 @@
-{"question":"Where can I find diamonds in Minecraft?","answer":"Diamonds are most commonly found around Y-level -58. Exploring caves or using branch mining can help you gather them more efficiently."}
-{"question":"How can I collect a lot of iron early in the game?","answer":"Iron ore is commonly found around Y-level 16. Exploring large cave systems is one of the fastest ways to obtain it."}
-{"question":"Where can I find emeralds?","answer":"Emeralds generate in mountain biomes. Mining at higher elevations in these areas increases your chances of finding them."}
-{"question":"What should I do if I run out of coal?","answer":"Coal is often found in mountainous areas and high terrain. You can also use charcoal as an alternative fuel source."}
-{"question":"What is gold mainly used for?","answer":"Gold is used for crafting golden apples, powered rails, and trading with Piglins in the Nether."}
-{"question":"Where can I find the most redstone?","answer":"Redstone is commonly found deep underground, especially around Y-level -58."}
-{"question":"How do I find ancient debris?","answer":"Ancient debris is most commonly found around Y-level 15 in the Nether. Many players use beds or TNT for efficient mining."}
-{"question":"Where can I find lapis lazuli?","answer":"Lapis lazuli is frequently found around Y-level 0 and is used for enchanting and making blue dye."}
-{"question":"Where can I get copper?","answer":"Copper is commonly generated around Y-level 48 and is useful for building and crafting lightning rods."}
-{"question":"What is the most efficient mining method?","answer":"Branch mining is considered one of the most efficient techniques because it maximizes resource discovery while minimizing effort."}
-
-{"question":"How can I safely defeat a Creeper?","answer":"Creepers take a moment before exploding. Attacking while keeping your distance or using a bow is the safest approach."}
-{"question":"What should I watch out for when fighting groups of Zombies?","answer":"Zombies can attract nearby Zombies. Fighting them in narrow spaces helps you deal with them one at a time."}
-{"question":"How can I defeat Skeletons more easily?","answer":"Using a shield to block arrows before closing the distance is an effective strategy."}
-{"question":"How do I fight Endermen safely?","answer":"Endermen are vulnerable to water. Building a two-block-high shelter allows you to attack them without being hit."}
-{"question":"What should I know when fighting Spiders?","answer":"Spiders can jump and climb walls. Fighting them in open areas makes them easier to manage."}
-{"question":"How should I prepare before summoning the Wither?","answer":"Bring strong gear and healing items. Fighting the Wither underground can help limit the destruction it causes."}
-{"question":"What is the key to defeating the Ender Dragon?","answer":"Destroy the End Crystals first to stop the dragon from healing, then attack it with bows and melee weapons."}
-{"question":"How can I deal with Ghasts?","answer":"You can hit their fireballs back with proper timing or eliminate them from a distance using a bow."}
-{"question":"Where do Slimes spawn most often?","answer":"Slimes spawn in slime chunks and swamp biomes, making these locations ideal for farming slimeballs."}
-{"question":"How can I avoid being attacked by Piglins?","answer":"Wearing at least one piece of golden armor prevents regular Piglins from attacking you on sight."}
-
-{"question":"What is the most important thing for beginner builders?","answer":"Start with a basic shape and gradually add depth and decorative details to improve the overall design."}
-{"question":"How can I make better-looking roofs?","answer":"Using stairs and slabs together creates more detailed and visually appealing roofs."}
-{"question":"How does redstone signal transmission work?","answer":"Redstone dust carries signals for up to 15 blocks before requiring reinforcement."}
-{"question":"How can I build an automatic door?","answer":"You can combine pistons with buttons or pressure plates to create a simple automatic door."}
-{"question":"What are Observers used for?","answer":"Observers detect block updates and emit redstone signals when changes occur."}
-{"question":"How do I create a hidden entrance?","answer":"Sticky pistons and redstone circuits can be used to build secret doors disguised as walls."}
-{"question":"How should I choose building block combinations?","answer":"Combining blocks with similar colors and textures creates a more natural appearance."}
-{"question":"Why are repeaters important in redstone builds?","answer":"Repeaters extend signal range, control direction, and introduce timing delays."}
-{"question":"What is the purpose of a Hopper?","answer":"Hoppers automatically transfer items and serve as a core component in automation systems."}
-{"question":"How can I improve my building skills?","answer":"Studying other builds and experimenting with different block combinations can help you develop your style."}
-
-{"question":"How can I manage hunger efficiently?","answer":"Carry high-saturation foods and avoid unnecessary sprinting and jumping whenever possible."}
-{"question":"What equipment should I craft first?","answer":"Stone tools should be your priority, followed by upgrading to iron equipment as soon as possible."}
-{"question":"How can I survive the first night safely?","answer":"Build a shelter before nightfall and prepare a bed and torches to stay protected."}
-{"question":"Is a shield really necessary?","answer":"Yes. Shields can block arrows and many melee attacks, greatly increasing your survivability."}
-{"question":"How can I avoid losing my items after dying?","answer":"Store valuable items in chests and remember the coordinates of your exploration routes."}
-{"question":"When should I start enchanting?","answer":"Enchanting becomes more worthwhile after obtaining diamond equipment."}
-{"question":"How many torches should I bring while exploring?","answer":"Carrying at least one full stack of torches is recommended for cave exploration."}
-{"question":"When is milk useful?","answer":"Milk removes most status effects and can be very helpful during combat and exploration."}
-{"question":"When should I use Fire Resistance potions?","answer":"They are especially useful during Nether exploration because they protect against lava damage."}
-{"question":"What are the most important resources for survival?","answer":"Food and iron are among the most essential resources for establishing a stable start."}
-
-{"question":"How can I farm wheat efficiently?","answer":"Placing water sources strategically allows you to hydrate large areas of farmland."}
-{"question":"How do automatic crop farms work?","answer":"Observers detect crop growth and activate pistons to harvest the crops automatically."}
-{"question":"Can Villager Farmers be used in automation?","answer":"Yes. Farmer Villagers can plant and harvest crops, making them valuable for automated farms."}
-{"question":"How can I build an automatic sugar cane farm?","answer":"Observers and pistons can harvest sugar cane automatically when it reaches the desired height."}
-{"question":"What are the benefits of an automatic bamboo farm?","answer":"Bamboo can be produced in large quantities and used as fuel or building material."}
-{"question":"What is the best way to raise cows?","answer":"Breed them using wheat and provide enough space to maintain a healthy population."}
-{"question":"How do automatic chicken farms work?","answer":"They collect eggs and hatch new chickens automatically, providing a steady supply of food and feathers."}
-{"question":"How can I automate pumpkin and melon harvesting?","answer":"Observers and pistons can harvest pumpkins and melons as soon as they grow."}
-{"question":"What are the advantages of bee farms?","answer":"Bee farms provide honey and honeycomb, while bees also help crops grow more efficiently."}
-{"question":"What is the most important part of an automation system?","answer":"Reliable redstone circuits and proper hopper-based item management are key to efficient automation."}
+{"question": "[Villagers] How do I get a Mending book?", "answer": "keep breaking and placing a lectern until the librarian offers it, then trade once to lock it in"}
+{"question": "[Villagers] Why won't my villager take the librarian job?", "answer": "check if he's unemployed and can actually reach the lectern \u2014 nitwits never take jobs either"}
+{"question": "[Villagers] How do I lower trade prices?", "answer": "cure a zombie villager near them, prices drop a ton. hero of the village helps too"}
+{"question": "[Villagers] Which villager profession is most useful?", "answer": "librarian for sure \u2014 enchanted books are huge and you can reroll for whatever you need"}
+{"question": "[Villagers] How do villagers breed?", "answer": "give them enough beds and toss some food around, they'll figure it out"}
+{"question": "[Villagers] How do I stop villagers from wandering off?", "answer": "put them in a small enclosed space near their workstation, they'll stay close"}
+{"question": "[Villagers] Can I move a villager to a new location?", "answer": "yeah, use a boat or minecart to push them where you want \u2014 it's a pain but works"}
+{"question": "[Villagers] What does a fletcher villager sell?", "answer": "arrows, bows, crossbows \u2014 great for getting tipped arrows cheap if you cure one first"}
+{"question": "[Villagers] How do I cure a zombie villager?", "answer": "throw a splash potion of weakness on it, then feed it a golden apple, wait a few minutes"}
+{"question": "[Villagers] Why do villagers keep running inside at night?", "answer": "that's just what they do, they sleep. make sure there are enough beds or they panic"}
+{"question": "[Villagers] What is a nitwit villager?", "answer": "useless green-robed villager that can't take any job \u2014 just ignore them"}
+{"question": "[Villagers] How many bookshelves do I need for a librarian reroll?", "answer": "just one lectern is enough to assign the job, bookshelves are for enchanting tables"}
+{"question": "[Villagers] Do villagers need to sleep to restock trades?", "answer": "they need to sleep and reach their workstation \u2014 both matter for restocking"}
+{"question": "[Villagers] How do I make a villager trading hall?", "answer": "small rooms with one villager and one workstation each, transport them there by boat"}
+{"question": "[Villagers] What does an armorer villager sell?", "answer": "armor pieces, eventually diamond armor if you level them up \u2014 worth curing one"}
+{"question": "[Villagers] Why did my villager lose its profession?", "answer": "someone broke its workstation. replace the block and it should reclaim the job"}
+{"question": "[Villagers] Can two villagers share a workstation?", "answer": "nope, one workstation per villager \u2014 if two compete, only one claims it"}
+{"question": "[Villagers] What does a weaponsmith sell?", "answer": "swords and axes, including enchanted ones at higher levels"}
+{"question": "[Villagers] Do cured villager prices stay cheap forever?", "answer": "yeah the discount is permanent, that's why zombie curing is so broken"}
+{"question": "[Villagers] How do I get a villager to offer a specific enchant?", "answer": "keep destroying and replacing the lectern until the trade you want shows up"}
+{"question": "[Villagers] What's the best way to protect villagers from raids?", "answer": "wall off the village and light everything up, iron golems help a lot too"}
+{"question": "[Villagers] How do I trigger a raid?", "answer": "enter a village with the Bad Omen effect, you get it by killing a pillager captain"}
+{"question": "[Villagers] What reward do I get for winning a raid?", "answer": "hero of the village \u2014 gives you discounts and villagers throw gifts at you"}
+{"question": "[Villagers] Can I breed villagers without a village?", "answer": "yeah just make a room with beds and enough food, they don't need an actual village"}
+{"question": "[Villagers] What does a toolsmith villager sell?", "answer": "tools like pickaxes and axes, enchanted ones at higher tiers \u2014 solid for early game"}
+{"question": "[Enchanting] What does Fortune do?", "answer": "makes blocks drop more stuff \u2014 diamonds, coal, flint, seeds, all that"}
+{"question": "[Enchanting] What does Silk Touch do?", "answer": "lets you pick up blocks as they are instead of their drops \u2014 great for ice or grass"}
+{"question": "[Enchanting] Can Fortune and Silk Touch be on the same tool?", "answer": "nope, they're mutually exclusive, pick one"}
+{"question": "[Enchanting] How do I unlock level 30 enchantments?", "answer": "put 15 bookshelves around your enchanting table with one air gap between them"}
+{"question": "[Enchanting] What does Looting do on a sword?", "answer": "mobs drop more items and rare drops are more likely \u2014 good for blaze rods and wither skulls"}
+{"question": "[Enchanting] What is Mending and why is it so good?", "answer": "repairs your gear using xp you pick up \u2014 basically makes tools last forever"}
+{"question": "[Enchanting] What does Unbreaking do?", "answer": "makes your gear last way longer before breaking, good on everything"}
+{"question": "[Enchanting] How do I get specific enchantments?", "answer": "either trade with a librarian or combine books on an anvil \u2014 table enchants are random"}
+{"question": "[Enchanting] What does Sharpness do?", "answer": "adds extra damage to your sword, stacks up to V"}
+{"question": "[Enchanting] What's the difference between Sharpness and Smite?", "answer": "smite only works on undead mobs but does more damage to them, sharpness works on everything"}
+{"question": "[Enchanting] What does Protection do on armor?", "answer": "reduces damage from basically everything, most flexible protection enchant"}
+{"question": "[Enchanting] Can I combine enchanted books on an anvil?", "answer": "yeah, just put book + book or book + item on the anvil and it merges them"}
+{"question": "[Enchanting] What does Efficiency do?", "answer": "makes you mine way faster \u2014 basically required on any pickaxe you use regularly"}
+{"question": "[Enchanting] What does Feather Falling do?", "answer": "reduces fall damage, stack it on boots \u2014 super useful especially in the nether"}
+{"question": "[Enchanting] What does Thorns do?", "answer": "reflects damage back to attackers when they hit you \u2014 but it eats your armor durability"}
+{"question": "[Enchanting] What does Aqua Affinity do?", "answer": "lets you mine at normal speed underwater \u2014 otherwise you mine super slow"}
+{"question": "[Enchanting] What does Respiration do?", "answer": "extends how long you can breathe underwater, great for ocean monuments"}
+{"question": "[Enchanting] How does the anvil 'too expensive' problem work?", "answer": "each time you combine on an anvil the cost goes up, eventually it hits 40 levels and locks"}
+{"question": "[Enchanting] What does Power do on a bow?", "answer": "increases arrow damage, like sharpness for bows"}
+{"question": "[Enchanting] What does Infinity do?", "answer": "lets you shoot infinite arrows as long as you have one arrow in your inventory"}
+{"question": "[Enchanting] Can Mending and Infinity be on the same bow?", "answer": "not in survival, they're mutually exclusive \u2014 pick one"}
+{"question": "[Enchanting] What does Knockback do?", "answer": "sends enemies flying further when you hit them \u2014 handy for keeping mobs away"}
+{"question": "[Enchanting] What does Flame do on a bow?", "answer": "sets enemies on fire when you shoot them, great against mobs that drop cooked food"}
+{"question": "[Enchanting] What does Luck of the Sea do?", "answer": "improves fishing loot quality \u2014 more enchanted books and less junk"}
+{"question": "[Enchanting] What does Lure do on a fishing rod?", "answer": "fish bite faster, reduces wait time significantly"}
+{"question": "[Nether] How do I find Ancient Debris?", "answer": "dig around y15 in the nether, beds and tnt work great for blowing out big areas fast"}
+{"question": "[Nether] Why are Piglins attacking me?", "answer": "wear at least one gold armor piece and don't open chests near them \u2014 either triggers them"}
+{"question": "[Nether] What is a Bastion Remnant?", "answer": "big nether structure full of piglins and great loot, very dangerous but worth it"}
+{"question": "[Nether] How do I get Blaze Rods?", "answer": "kill blazes in nether fortresses \u2014 they always drop them"}
+{"question": "[Nether] What are Fire Resistance potions for?", "answer": "makes you immune to fire and lava \u2014 basically required for nether exploration"}
+{"question": "[Nether] What do I barter with Piglins?", "answer": "throw gold ingots at them, you can get fire res potions, ender pearls, and other useful stuff"}
+{"question": "[Nether] How do I make a Nether portal?", "answer": "build a 4x5 obsidian frame and light the inside with flint and steel"}
+{"question": "[Nether] What does crying obsidian do?", "answer": "used to craft a respawn anchor, which lets you set your spawn point in the nether"}
+{"question": "[Nether] How do I use a Respawn Anchor?", "answer": "charge it with glowstone then right click to set spawn \u2014 explodes if used in overworld"}
+{"question": "[Nether] What biomes are in the Nether?", "answer": "nether wastes, crimson forest, warped forest, basalt deltas, and soul sand valley"}
+{"question": "[Nether] Where do Wither Skeletons spawn?", "answer": "in nether fortresses \u2014 you need 3 wither skeleton skulls to summon the wither"}
+{"question": "[Nether] How do I increase Wither Skeleton skull drops?", "answer": "looting III on your sword helps a lot, still rare though"}
+{"question": "[Nether] What is Netherite and how do I make it?", "answer": "smelt ancient debris into netherite scraps, combine 4 scraps + 4 gold ingots for an ingot"}
+{"question": "[Nether] How do I upgrade diamond gear to Netherite?", "answer": "put diamond item + netherite ingot in a smithing table"}
+{"question": "[Nether] What's the safest biome in the Nether?", "answer": "warped forest \u2014 endermen are the only real threat and striders spawn there"}
+{"question": "[Nether] How do I ride a Strider?", "answer": "put a saddle on one and use a warped fungus on a stick to steer it"}
+{"question": "[Nether] How do I cross lava lakes in the nether?", "answer": "fire res potion + swimming works, or ride a strider, or just bridge across"}
+{"question": "[Nether] What spawns in a Nether Fortress?", "answer": "blazes, wither skeletons, zombified piglins, and regular skeletons sometimes"}
+{"question": "[Nether] How do I find a Nether Fortress?", "answer": "travel north or south \u2014 fortresses tend to generate along z-axis, keep searching"}
+{"question": "[Nether] What is Hoglin meat useful for?", "answer": "hoglins drop porkchops, solid food source if you're staying in the nether a while"}
+{"question": "[Nether] Why do Hoglins run from Warped Fungi?", "answer": "they're scared of it \u2014 plant some near your base to keep them away"}
+{"question": "[Nether] How do I make nether bricks?", "answer": "smelt netherrack in a furnace to get it \u2014 used to build in nether aesthetic"}
+{"question": "[Nether] What drops Ghast Tears?", "answer": "ghasts \u2014 used for regen potions and end crystals"}
+{"question": "[Nether] How do I deflect Ghast fireballs?", "answer": "hit them back with anything \u2014 sword, fist, even a snowball works"}
+{"question": "[Nether] What is Soul Speed?", "answer": "boots enchant that makes you run fast on soul sand and soul soil \u2014 only from piglin bartering"}
+{"question": "[End] How do I find a Stronghold?", "answer": "throw eyes of ender and follow where they go \u2014 toss a few and track the path"}
+{"question": "[End] How do I beat the Ender Dragon?", "answer": "destroy all the end crystals on the pillars first, then hit the dragon when it hovers over the portal"}
+{"question": "[End] What is an Elytra?", "answer": "wings that let you glide \u2014 found in end city ship chests, best item in the game"}
+{"question": "[End] How do I find an End City?", "answer": "after killing the dragon, go through the end gateway portal to the outer islands and explore"}
+{"question": "[End] How do I fly with Elytra?", "answer": "jump and double tap space to start gliding, use firework rockets to boost while flying"}
+{"question": "[End] How do I respawn the Ender Dragon?", "answer": "place 4 end crystals on the edges of the exit portal, one on each side"}
+{"question": "[End] What does the Ender Dragon drop?", "answer": "12000 xp, a dragon egg, and it opens the exit portal \u2014 xp alone makes it worth respawning"}
+{"question": "[End] How do I pick up the Dragon Egg?", "answer": "place a torch under it and mine the block it's sitting on, or use a piston to push it"}
+{"question": "[End] What are Shulkers and what do they drop?", "answer": "box-shaped mobs in end cities that shoot levitation bullets \u2014 drop shulker shells for boxes"}
+{"question": "[End] How do I make a Shulker Box?", "answer": "two shulker shells + a chest \u2014 gives you portable storage that keeps items when broken"}
+{"question": "[End] What do Endermen drop?", "answer": "ender pearls \u2014 farm them in the end for easy teleportation and to craft eyes of ender"}
+{"question": "[End] How do I avoid Enderman aggro?", "answer": "don't look at them directly, wear a pumpkin on your head to look at them safely"}
+{"question": "[End] What is Chorus Fruit used for?", "answer": "you can eat it and teleport randomly \u2014 also used to craft purpur blocks and end rods"}
+{"question": "[End] How do I destroy End Crystals on pillars?", "answer": "shoot them with a bow, throw a snowball, or hit with an arrow \u2014 some are caged so shoot through"}
+{"question": "[End] What are End Rods used for?", "answer": "they're a light source that looks clean \u2014 popular for modern builds"}
+{"question": "[End] What is the End Gateway?", "answer": "small portal that appears after killing the dragon \u2014 throw an ender pearl in to teleport to outer islands"}
+{"question": "[End] What loot is in End Cities?", "answer": "elytra in ships, and armor/tools with high level enchants \u2014 best natural loot in the game"}
+{"question": "[End] How do I get back from the End?", "answer": "step into the exit portal in the center after killing the dragon, or die"}
+{"question": "[End] Can Endermen pick up any block?", "answer": "they can pick up certain blocks like dirt, sand, gravel, and some others \u2014 annoying in builds"}
+{"question": "[End] How tall does my End exit portal room need to be?", "answer": "you need to find the stronghold's portal room, you can't build one \u2014 just fix the existing frame with eyes"}
+{"question": "[End] What's the fastest way to farm Ender Pearls?", "answer": "go to the end and kill endermen there, way more spawn than in the overworld"}
+{"question": "[End] Do I need full eyes of ender to activate the End Portal?", "answer": "you need to fill all empty slots in the frame \u2014 usually 1-2 are already filled when you find it"}
+{"question": "[End] What's the end ship?", "answer": "a flying structure attached to some end cities \u2014 elytra and a dragon head spawn inside"}
+{"question": "[End] How much xp does the Ender Dragon give?", "answer": "12000 xp first kill, 500 xp for respawns \u2014 great for leveling up fast"}
+{"question": "[End] Can Endermen teleport in rain?", "answer": "they take damage from water so they teleport rapidly trying to avoid it"}
+{"question": "[Farming] How do I build a wheat farm?", "answer": "hoe some dirt near water and plant seeds, harvest when it's fully grown and bright yellow"}
+{"question": "[Farming] What's the easiest food early game?", "answer": "cook up some pork or beef, or just make bread from wheat \u2014 all easy to get early"}
+{"question": "[Farming] How do I build an auto sugar cane farm?", "answer": "place observers facing the cane and connect to pistons \u2014 breaks it when it grows to 3"}
+{"question": "[Farming] Why are my crops growing slowly?", "answer": "probably not enough light or the farmland is dry \u2014 put torches and a water source nearby"}
+{"question": "[Farming] What's the best food in the game?", "answer": "golden carrots are the most filling and give good saturation \u2014 cake is fun but inefficient"}
+{"question": "[Farming] How do I auto-harvest crops?", "answer": "villager farmers do it automatically if you set them up right \u2014 super efficient"}
+{"question": "[Farming] What does bone meal do for crops?", "answer": "instantly grows them a few stages \u2014 useful for getting food fast early on"}
+{"question": "[Farming] How far does water hydrate farmland?", "answer": "4 blocks in any direction, so one water block in the middle of a 9x9 covers everything"}
+{"question": "[Farming] How do I breed cows?", "answer": "feed two cows wheat and they'll make a baby \u2014 same idea for most animals"}
+{"question": "[Farming] How do I breed pigs?", "answer": "use carrots, potatoes, or beetroot to breed them"}
+{"question": "[Farming] What animals can I farm for food?", "answer": "cows, pigs, chickens, sheep, rabbits \u2014 chickens are easiest since they auto-drop eggs"}
+{"question": "[Farming] How do I make a chicken farm?", "answer": "drop chickens into a chamber, let them lay eggs, eggs hatch more chickens \u2014 auto farms work great"}
+{"question": "[Farming] What is a crop that grows without water?", "answer": "nether wart grows in soul sand without water, only in nether or with soul sand elsewhere"}
+{"question": "[Farming] How do I grow mushrooms?", "answer": "they need low light levels \u2014 dark room farming or use bone meal on a single mushroom in any biome"}
+{"question": "[Farming] How do I make a composter?", "answer": "7 wooden slabs in a U shape \u2014 put organic stuff in to make bone meal"}
+{"question": "[Farming] What can I put in a composter?", "answer": "most plant-based items \u2014 seeds, crops, leaves, flowers, all that"}
+{"question": "[Farming] How do I grow pumpkins and melons?", "answer": "plant the seeds and they'll grow a stem, then a fruit pops out next to it on dirt or farmland"}
+{"question": "[Farming] How do I make an automatic melon farm?", "answer": "pistons facing the fruit spots triggered by observers \u2014 breaks melons when they grow"}
+{"question": "[Farming] What's the best crop for trading?", "answer": "wheat and carrots are solid for farmer villagers, pumpkins and melons too"}
+{"question": "[Farming] How do I grow cocoa beans?", "answer": "attach them to jungle logs \u2014 they need a jungle log to grow on"}
+{"question": "[Farming] How do I breed sheep for wool?", "answer": "feed two sheep wheat, then shear them for wool \u2014 they regrow wool by eating grass"}
+{"question": "[Farming] How do I dye sheep?", "answer": "right click with any dye and they'll change color permanently, wool grows in that color"}
+{"question": "[Farming] Can crops grow at night?", "answer": "yeah as long as there's enough light \u2014 torches work fine"}
+{"question": "[Farming] What is a villager farmer?", "answer": "farmer villagers auto-plant and harvest crops if you set up a farm near them with beds"}
+{"question": "[Farming] How do I make a kelp farm?", "answer": "kelp grows naturally underwater up to the surface, auto-harvest with pistons and observers"}
+{"question": "[Mining] What level do diamonds spawn at?", "answer": "y -58 is the sweet spot now, deepslate level \u2014 branch mine there for best results"}
+{"question": "[Mining] What's the best pickaxe enchant combo?", "answer": "efficiency V, unbreaking III, fortune III, mending \u2014 that's the dream pickaxe"}
+{"question": "[Mining] How do I find diamonds faster?", "answer": "strip mine at y -58 or go cave diving at that level \u2014 caves often expose diamond veins"}
+{"question": "[Mining] What does a Fortune pickaxe do for diamonds?", "answer": "each diamond ore can drop up to 4 diamonds with fortune III instead of just 1"}
+{"question": "[Mining] How do I mine obsidian?", "answer": "you need a diamond or netherite pickaxe \u2014 takes about 10 seconds per block"}
+{"question": "[Mining] What is deepslate?", "answer": "harder version of stone that generates below y0 \u2014 takes longer to mine but same drops"}
+{"question": "[Mining] How do I find iron ore?", "answer": "it's everywhere but most common around y15 and y232 \u2014 just dig around and you'll find plenty"}
+{"question": "[Mining] What are the best ores to mine early game?", "answer": "iron first, then coal, then gold once you hit the right level \u2014 don't sleep on iron"}
+{"question": "[Mining] How do I smelt ores faster?", "answer": "use a blast furnace for ores and metals, twice as fast as a regular furnace"}
+{"question": "[Mining] What fuel burns longest in a furnace?", "answer": "lava buckets burn for 1000 seconds each \u2014 by far the most efficient fuel"}
+{"question": "[Mining] How do I find Amethyst?", "answer": "look for amethyst geodes underground, they're big hollow spheres with purple crystals inside"}
+{"question": "[Mining] What are Amethyst Shards used for?", "answer": "spyglasses, tinted glass, and calibrated sculk sensors \u2014 niche but useful"}
+{"question": "[Mining] How do I avoid cave-ins while mining?", "answer": "there aren't real cave-ins but watch for gravel and sand above you \u2014 those fall"}
+{"question": "[Mining] What is the fastest way to mine stone?", "answer": "efficiency V diamond or netherite pickaxe with haste II beacon \u2014 instant mining"}
+{"question": "[Mining] What Y level is gold most common?", "answer": "y -16 in the overworld, but badlands biomes have way more gold at higher levels"}
+{"question": "[Mining] How do I find copper?", "answer": "super common between y0 and y96 \u2014 hard to miss, turns turquoise green over time"}
+{"question": "[Mining] What are the rarest ores?", "answer": "ancient debris in the nether, then emerald which only spawns in mountain biomes"}
+{"question": "[Mining] How do I find emeralds?", "answer": "only spawn in mountain biomes \u2014 rare to mine, easier to trade with villagers"}
+{"question": "[Mining] What is raw ore and when did it change?", "answer": "since 1.17 ores drop raw ore instead of the ore block \u2014 smelt raw ore to get the ingot"}
+{"question": "[Mining] Should I use fortune or silk touch on ores?", "answer": "fortune for most ores to maximize drops, silk touch if you want the ore block itself"}
+{"question": "[Mining] How deep do I need to go for Netherite?", "answer": "ancient debris is in the nether not overworld, mostly y8-22 there"}
+{"question": "[Mining] What is a branch mine?", "answer": "dig a long tunnel then branch off every 3 blocks \u2014 efficient way to cover a lot of ground"}
+{"question": "[Mining] How do I deal with lava while mining?", "answer": "always carry a water bucket \u2014 place it on lava to turn it to obsidian or stone"}
+{"question": "[Mining] What pickaxe do I need to mine diamond?", "answer": "iron pickaxe minimum, anything lower won't drop the ore"}
+{"question": "[Mining] How do I light up caves while exploring?", "answer": "torches obviously, but a torch on a stick or night vision helps for exploration"}
+{"question": "[Mobs] How do I stop Creepers from blowing up?", "answer": "keep your distance or kill them with a bow before they can hiss at you"}
+{"question": "[Mobs] What drops Wither Skeleton skulls?", "answer": "wither skeletons in nether fortresses \u2014 looting III helps but it's still rare"}
+{"question": "[Mobs] How do I tame a wolf?", "answer": "feed it bones until hearts appear \u2014 takes a few bones usually"}
+{"question": "[Mobs] How do I tame a cat?", "answer": "approach slowly with raw cod or salmon and feed it until tamed"}
+{"question": "[Mobs] What do Creepers drop?", "answer": "gunpowder \u2014 also drop music discs if killed by a skeleton's arrow"}
+{"question": "[Mobs] How do I get string?", "answer": "kill spiders or break cobwebs with a sword \u2014 spiders are the easiest source"}
+{"question": "[Mobs] How do I stop mobs from spawning in my base?", "answer": "light everything up \u2014 mobs need light level 0 to spawn, torches everywhere fixes it"}
+{"question": "[Mobs] What is a mob spawner and how do I use it?", "answer": "found in dungeons and structures, they spawn mobs in a small radius \u2014 great for xp farms"}
+{"question": "[Mobs] How do I make an XP farm?", "answer": "build a mob farm with water channels funneling mobs into a kill zone \u2014 drowning trap is simple"}
+{"question": "[Mobs] What do Phantoms drop?", "answer": "phantom membrane \u2014 used to repair elytra and brew slow falling potions"}
+{"question": "[Mobs] How do I stop Phantoms from spawning?", "answer": "sleep in a bed \u2014 phantoms spawn when you haven't slept for 3 nights"}
+{"question": "[Mobs] How do I kill the Wither?", "answer": "build it underground so it can't fly away, hit it with a netherite sword, use potions"}
+{"question": "[Mobs] What does the Wither drop?", "answer": "a nether star \u2014 used to craft a beacon, that's its only purpose"}
+{"question": "[Mobs] How do I spawn the Wither?", "answer": "3 wither skeleton skulls on top of 4 soul sand or soul soil in a T shape"}
+{"question": "[Mobs] What do Slimes drop?", "answer": "slimeballs \u2014 used for sticky pistons and slime blocks, important for redstone"}
+{"question": "[Mobs] Where do Slimes spawn?", "answer": "swamp biomes at night and in slime chunks underground below y40"}
+{"question": "[Mobs] What is a charged Creeper?", "answer": "creeper struck by lightning, its explosion is twice as big \u2014 can drop mob heads"}
+{"question": "[Mobs] How do I breed horses?", "answer": "tame two horses first then feed them both golden apples or golden carrots"}
+{"question": "[Mobs] How do I tame a horse?", "answer": "keep mounting it until hearts appear \u2014 feed it apples or sugar to speed it up"}
+{"question": "[Mobs] What do Drowned drop?", "answer": "rotten flesh, copper ingots, and rarely tridents or nautilus shells"}
+{"question": "[Mobs] How do I get a Trident?", "answer": "drowned holding tridents have a small chance to drop them \u2014 Looting III helps"}
+{"question": "[Mobs] What enchantments work on a Trident?", "answer": "loyalty, riptide, channeling, impaling \u2014 each does different things, can't have loyalty and riptide together"}
+{"question": "[Mobs] What do Bees do?", "answer": "they pollinate crops and make honey \u2014 collect honey from hives, useful for sugar and healing"}
+{"question": "[Mobs] How do I harvest honey without getting stung?", "answer": "put a campfire under the hive first \u2014 smoke calms them and they won't attack"}
+{"question": "[Mobs] What is a Guardian and where is it found?", "answer": "underwater mob in ocean monuments, drops prismarine and fish \u2014 decent xp farm target"}
+{"question": "[Crafting] How do I make a crafting table?", "answer": "4 wooden planks in a 2x2 grid \u2014 first thing you should make"}
+{"question": "[Crafting] How do I make a furnace?", "answer": "8 cobblestone in a ring leaving the center empty"}
+{"question": "[Crafting] How do I craft a bed?", "answer": "3 wool on top, 3 planks on bottom \u2014 wool color sets the bed color"}
+{"question": "[Crafting] How do I make TNT?", "answer": "5 gunpowder and 4 sand alternating in a checkerboard pattern"}
+{"question": "[Crafting] How do I make a bow?", "answer": "3 sticks diagonally and 3 string on the side \u2014 sticks form the arc, string the bowstring"}
+{"question": "[Crafting] How do I craft armor?", "answer": "helmet is 5 material in a U top, chestplate is 8 in a U leaving top center, etc"}
+{"question": "[Crafting] How do I make a Brewing Stand?", "answer": "blaze rod in the center bottom, 3 cobblestone across the bottom row"}
+{"question": "[Crafting] How do I make an Anvil?", "answer": "3 iron blocks on top, 1 iron ingot in middle center, 3 iron ingots on bottom"}
+{"question": "[Crafting] How do I make a Beacon?", "answer": "3 obsidian on bottom, 3 glass on top row, nether star in center, glass fills rest"}
+{"question": "[Crafting] How do I make Eyes of Ender?", "answer": "ender pearl + blaze powder \u2014 need these to find and activate the end portal"}
+{"question": "[Crafting] How do I make a Compass?", "answer": "4 iron ingots around the center with redstone dust in the middle"}
+{"question": "[Crafting] How do I make a Clock?", "answer": "4 gold ingots around redstone dust \u2014 tells you time of day even underground"}
+{"question": "[Crafting] How do I craft a Spyglass?", "answer": "2 copper ingots and 1 amethyst shard stacked vertically"}
+{"question": "[Crafting] How do I make a Lead?", "answer": "4 string and 1 slimeball \u2014 lets you leash and drag animals around"}
+{"question": "[Crafting] How do I make a Name Tag?", "answer": "you can't craft it \u2014 find them in chests or trade with a librarian villager"}
+{"question": "[Crafting] How do I make a Saddle?", "answer": "also can't be crafted \u2014 find in dungeon chests, village chests, or trade for one"}
+{"question": "[Crafting] How do I make Firework Rockets?", "answer": "paper + gunpowder gives a basic rocket \u2014 add firework stars for effects"}
+{"question": "[Crafting] How do I craft a Shulker Box?", "answer": "2 shulker shells on top and bottom with a chest in the middle"}
+{"question": "[Crafting] How do I make a Barrel?", "answer": "6 planks on sides with 2 slabs top and bottom \u2014 works like a chest but opens anywhere"}
+{"question": "[Crafting] How do I make a Grindstone?", "answer": "stick, stone slab, stick on top row and 2 planks below the sticks"}
+{"question": "[Crafting] How do I make a Stonecutter?", "answer": "3 stone on bottom, 1 iron ingot in center \u2014 lets you cut stone into stairs/slabs cheaper"}
+{"question": "[Crafting] How do I make a Smithing Table?", "answer": "2 iron ingots on top, 2 planks below each \u2014 used to upgrade diamond to netherite"}
+{"question": "[Crafting] How do I make a Loom?", "answer": "2 string on top, 2 planks below \u2014 used to apply patterns to banners"}
+{"question": "[Crafting] How do I make a Cartography Table?", "answer": "2 paper on top, 4 planks filling bottom 2 rows"}
+{"question": "[Crafting] How do I make a Lectern?", "answer": "4 wooden slabs in a top row with a bookshelf below center"}
+{"question": "[Redstone] How does a Redstone repeater work?", "answer": "extends signal distance and adds a short delay, also locks signals in one direction"}
+{"question": "[Redstone] What is a Redstone comparator used for?", "answer": "measures container fullness, compares signal strengths, great for item detectors"}
+{"question": "[Redstone] How do I make a simple door button?", "answer": "place a button or pressure plate next to a door \u2014 that's it, it'll open automatically"}
+{"question": "[Redstone] How does a piston work?", "answer": "extends one block when powered, pushes up to 12 blocks \u2014 sticky piston pulls it back"}
+{"question": "[Redstone] What's the difference between a piston and sticky piston?", "answer": "sticky pulls the block back when it retracts, regular just leaves it wherever it pushed"}
+{"question": "[Redstone] How do I make a hidden door?", "answer": "pistons pushing solid blocks that blend with the wall, triggered by a hidden lever"}
+{"question": "[Redstone] How do I make a Redstone clock?", "answer": "two repeaters facing each other with dust \u2014 creates a repeating pulse"}
+{"question": "[Redstone] What is an observer block?", "answer": "detects block state changes and sends a pulse \u2014 super useful for auto farms"}
+{"question": "[Redstone] How do I use a Hopper?", "answer": "connects to containers below it and pulls items from containers above \u2014 great for auto sorting"}
+{"question": "[Redstone] How do I make an item sorter?", "answer": "hoppers with comparators and locked hoppers \u2014 complex but very satisfying to build"}
+{"question": "[Redstone] How does a Dropper differ from a Dispenser?", "answer": "dropper drops items as entities, dispenser activates items \u2014 dispenser shoots arrows etc"}
+{"question": "[Redstone] What is a Redstone torch?", "answer": "always-on power source that also inverts signals \u2014 basic component for logic gates"}
+{"question": "[Redstone] How do I make a NOT gate in Redstone?", "answer": "a redstone torch next to a wire \u2014 when wire is powered, torch turns off"}
+{"question": "[Redstone] How do I make a door that only opens from one side?", "answer": "use a comparator and some logic to only detect signal from one direction"}
+{"question": "[Redstone] How does a lever differ from a button?", "answer": "lever stays on until you flip it again, button gives a short pulse then turns off"}
+{"question": "[Redstone] What is a T-flip flop in Redstone?", "answer": "toggles between on/off with each pulse \u2014 turns a button into a lever basically"}
+{"question": "[Redstone] How do Tripwire Hooks work?", "answer": "connect two hooks with string \u2014 sends a signal when a player or mob crosses the string"}
+{"question": "[Redstone] How do I make a flying machine?", "answer": "uses slime/honey blocks with pistons firing in sequence \u2014 can carry blocks through the world"}
+{"question": "[Redstone] What is a Slime Block used for in Redstone?", "answer": "they stick to adjacent blocks and can move them all together when pushed by a piston"}
+{"question": "[Redstone] How do I make a rapid pulser?", "answer": "observer facing a block that changes state rapidly \u2014 or two observers facing each other"}
+{"question": "[Redstone] What is a monostable circuit?", "answer": "takes any signal length and converts it to a single short pulse \u2014 useful for timing"}
+{"question": "[Redstone] How far does Redstone signal travel?", "answer": "15 blocks before it fades \u2014 use repeaters to extend it further"}
+{"question": "[Redstone] How do I make an automatic door?", "answer": "pressure plates on both sides of the door connected to it \u2014 simple and effective"}
+{"question": "[Redstone] What powers a Redstone lamp?", "answer": "any redstone signal \u2014 great for mood lighting or status indicators"}
+{"question": "[Redstone] How do I make a combination lock in Minecraft?", "answer": "series of levers where only the right combination opens the door \u2014 uses AND gate logic"}
+{"question": "[Building] What blocks are best for a starter house?", "answer": "wood or stone, whatever you have \u2014 just avoid dirt and make sure it's lit inside"}
+{"question": "[Building] How do I build stairs properly?", "answer": "use stair blocks instead of stacking \u2014 they auto-adjust to connect with adjacent stairs"}
+{"question": "[Building] What's the best looking wood type?", "answer": "cherry and dark oak look great \u2014 spruce is classic, crimson is nice for dark builds"}
+{"question": "[Building] How do I prevent my wood house from burning?", "answer": "don't put fire or lava near it \u2014 lightning can ignite it too so consider using stone"}
+{"question": "[Building] How do I make glass?", "answer": "smelt sand in a furnace \u2014 one sand per glass block"}
+{"question": "[Building] How do I make colored glass?", "answer": "surround a dye with 8 glass blocks in a crafting table"}
+{"question": "[Building] How do I build a roof that looks good?", "answer": "use stair blocks in layers stepping up \u2014 or use slabs for a flatter look"}
+{"question": "[Building] What are the best decoration blocks?", "answer": "banners, item frames, flower pots, lanterns, and trapdoors used creatively go a long way"}
+{"question": "[Building] How do I use scaffolding?", "answer": "place it to build tall structures easily, climb up and break the bottom to collapse it all"}
+{"question": "[Building] How do I make a fireplace that won't burn stuff?", "answer": "put a campfire in a non-flammable surround like stone or brick \u2014 looks great and safe"}
+{"question": "[Building] How do I build underground without it looking like a cave?", "answer": "consistent wall material, good lighting, and decorative blocks to break it up"}
+{"question": "[Building] What is concrete good for?", "answer": "solid colors that don't fade \u2014 popular for modern builds and pixel art"}
+{"question": "[Building] How do I make concrete?", "answer": "concrete powder drops when it hits water \u2014 mine the result to get solid concrete"}
+{"question": "[Building] How do I make terracotta?", "answer": "smelt clay blocks in a furnace, then you can dye it or glaze it"}
+{"question": "[Building] What are glazed terracotta patterns?", "answer": "each color has a unique pattern \u2014 rotate them for cool effects in floors and walls"}
+{"question": "[Building] How do I build a farm that looks good?", "answer": "use wood fences around the edges, pathways, and mix crop types for visual variety"}
+{"question": "[Building] How do I make a path look natural?", "answer": "use grass path blocks mixed with gravel or coarse dirt \u2014 vary it a bit so it looks worn"}
+{"question": "[Building] What's the best block for medieval builds?", "answer": "cobblestone, stone bricks, dark oak, andesite \u2014 mix them for texture"}
+{"question": "[Building] How do I use trapdoors creatively?", "answer": "they work as shutters, vents, shelves, laptop screens \u2014 tons of detail uses"}
+{"question": "[Building] How do I build a big tree?", "answer": "use dark oak or jungle saplings in a 2x2, or build custom with leaf and log blocks"}
+{"question": "[Building] What blocks work for modern builds?", "answer": "white concrete, glass, smooth stone, quartz \u2014 clean lines and flat surfaces"}
+{"question": "[Building] How do I light my build without ugly torches?", "answer": "sea lanterns, shroomlights, lanterns, glow stone under slabs, or light-emitting blocks hidden in walls"}
+{"question": "[Building] How do I copy a build to another location?", "answer": "use structure blocks in creative or just manually rebuild \u2014 no survival copy paste"}
+{"question": "[Building] What is tuff good for?", "answer": "building material added with deepslate \u2014 looks nice for rustic or underground builds"}
+{"question": "[Building] How do I make my builds look less blocky?", "answer": "add depth with stairs and slabs, use different but complementary materials, vary heights"}
+{"question": "[Potions] How do I start brewing potions?", "answer": "get a brewing stand from a nether fortress or craft one with a blaze rod, then grab some nether wart"}
+{"question": "[Potions] What is the base for most potions?", "answer": "awkward potion \u2014 made from nether wart + water bottle, it's the starting point for almost everything"}
+{"question": "[Potions] How do I make a Strength potion?", "answer": "awkward potion + blaze powder in the brewing stand"}
+{"question": "[Potions] How do I make a Fire Resistance potion?", "answer": "awkward potion + magma cream \u2014 must have for nether trips"}
+{"question": "[Potions] How do I extend a potion's duration?", "answer": "add redstone to the brewed potion \u2014 extends time but doesn't make it stronger"}
+{"question": "[Potions] How do I make a potion stronger (level II)?", "answer": "add glowstone dust \u2014 increases potency but usually shortens duration"}
+{"question": "[Potions] How do I make a splash potion?", "answer": "add gunpowder to any potion \u2014 turns it into a throwable version"}
+{"question": "[Potions] How do I make a lingering potion?", "answer": "add dragon's breath to a splash potion \u2014 creates a lasting cloud on the ground"}
+{"question": "[Potions] What is dragon's breath and how do I get it?", "answer": "collect it with an empty glass bottle during the Ender Dragon fight when she breathes"}
+{"question": "[Potions] How do I make a Night Vision potion?", "answer": "awkward potion + golden carrot"}
+{"question": "[Potions] How do I make a Speed potion?", "answer": "awkward potion + sugar"}
+{"question": "[Potions] How do I make a Regeneration potion?", "answer": "awkward potion + ghast tear"}
+{"question": "[Potions] How do I make a Healing potion?", "answer": "awkward potion + glistening melon slice"}
+{"question": "[Potions] How do I make a Poison potion?", "answer": "awkward potion + spider eye"}
+{"question": "[Potions] How do I make a Slow Falling potion?", "answer": "awkward potion + phantom membrane \u2014 great for elytra landings"}
+{"question": "[Potions] How do I make a Water Breathing potion?", "answer": "awkward potion + puffer fish"}
+{"question": "[Potions] What does a Mundane Potion do?", "answer": "nothing useful on its own \u2014 it's an intermediate brew from certain ingredients without nether wart"}
+{"question": "[Potions] How do I make a Weakness potion?", "answer": "water bottle + fermented spider eye \u2014 used to cure zombie villagers"}
+{"question": "[Potions] What does fermented spider eye do?", "answer": "corrupts potions into their opposite or negative version \u2014 turns healing into harming, etc"}
+{"question": "[Potions] How do I make a Harming potion?", "answer": "healing potion + fermented spider eye"}
+{"question": "[Potions] How do I make an Invisibility potion?", "answer": "night vision potion + fermented spider eye"}
+{"question": "[Potions] How many potions can I brew at once?", "answer": "3 at a time \u2014 put 3 bottles in the bottom slots of the brewing stand"}
+{"question": "[Potions] What fuel does a Brewing Stand use?", "answer": "blaze powder \u2014 one lasts a long time, drop some in the left slot"}
+{"question": "[Potions] How do I make a Turtle Master potion?", "answer": "awkward potion + turtle shell \u2014 gives resistance but also slowness, situational"}
+{"question": "[Potions] What's the most useful combat potion?", "answer": "strength II and fire resistance are probably the most impactful for most fights"}
+{"question": "[Survival] What should I do first when I spawn?", "answer": "punch some trees, make a crafting table and wooden tools, then find shelter before night"}
+{"question": "[Survival] How do I survive the first night?", "answer": "dig into a hill or build a dirt box before dark \u2014 just stay inside until morning"}
+{"question": "[Survival] What's the fastest way to get iron?", "answer": "cave dive near your spawn, iron is super common in the first cave you find"}
+{"question": "[Survival] How do I keep my hunger full?", "answer": "cook meat whenever you get it, bread from wheat is reliable once you settle down"}
+{"question": "[Survival] How do I set my spawn point?", "answer": "sleep in a bed to set it \u2014 if the bed gets destroyed your spawn resets"}
+{"question": "[Survival] What's the best armor to get first?", "answer": "iron armor is totally fine for most of the game \u2014 get full iron before going to the nether"}
+{"question": "[Survival] How do I get leather for books?", "answer": "kill cows, horses, hoglins, or foxes \u2014 cows are easiest early on"}
+{"question": "[Survival] How do I not get lost?", "answer": "write down your coordinates when you explore, or set a waypoint somehow \u2014 F3 shows coords"}
+{"question": "[Survival] How do I carry more stuff?", "answer": "shulker boxes in your inventory let you carry a ton \u2014 game changer for exploration"}
+{"question": "[Survival] How do I make a map?", "answer": "9 paper in a crafting table, or compass surrounded by paper \u2014 zoom out by adding paper on a cartography table"}
+{"question": "[Survival] How do I mark points of interest?", "answer": "banners on a map show locations, or just remember your coordinates"}
+{"question": "[Survival] What's the best way to get XP fast?", "answer": "mob farm, smelting stacks of stuff, or fighting the ender dragon for a huge burst"}
+{"question": "[Survival] How do I repair tools without losing enchants?", "answer": "mending enchant fixes with XP, or combine two of the same item on an anvil"}
+{"question": "[Survival] How do I deal with Creepers safely?", "answer": "bow them from range or time a sword hit and back off before they explode"}
+{"question": "[Survival] What do I need to beat the game?", "answer": "kill the Ender Dragon \u2014 get there by finding a stronghold and activating the end portal"}
+{"question": "[Survival] How do I make a safe mining spot?", "answer": "light up the area as you go and keep a water bucket handy for lava"}
+{"question": "[Survival] How do I cure hunger quickly?", "answer": "cooked steak or pork fills a lot \u2014 golden carrots are best if you have them"}
+{"question": "[Survival] What should I build first?", "answer": "a small house near your spawn, a chest to store stuff, and a farm for food"}
+{"question": "[Survival] Is it worth making a gold farm?", "answer": "yeah, piglin bartering gets you fire res potions and other useful stuff passively"}
+{"question": "[Survival] How do I get a shield?", "answer": "one iron ingot and 6 planks \u2014 make one as soon as you have iron, it's super useful"}
+{"question": "[Survival] How does a shield work?", "answer": "right click to block \u2014 reduces most damage and completely blocks arrows"}
+{"question": "[Survival] When should I go to the Nether?", "answer": "once you have full iron armor and weapons \u2014 go earlier only if you need specific resources"}
+{"question": "[Survival] How do I find a village?", "answer": "explore open biomes like plains and savanna, or look for torches from far away at night"}
+{"question": "[Survival] How do I get wool without killing sheep?", "answer": "shear them with shears \u2014 they regrow it by eating grass, way more efficient"}
+{"question": "[Survival] What's a good early game priority list?", "answer": "wood \u2192 stone tools \u2192 shelter \u2192 food \u2192 iron \u2192 explore caves \u2192 nether \u2192 end"}
