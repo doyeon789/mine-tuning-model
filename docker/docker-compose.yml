@@ -12,7 +12,7 @@ services:
       - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
     command: >
       python -m sglang.launch_server
-      --model-path Qwen/Qwen3-8B
+      --model-path ddoirn/minecraft-assistant-qwen3-8b
       --host 0.0.0.0
       --port 30000
       --dtype bfloat16
