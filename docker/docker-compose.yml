@@ -12,7 +12,7 @@ services:
       - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
     command: >
       python -m sglang.launch_server
-      --model-path Qwen/Qwen3-8B
+      --model-path ddorin/minecraft-assistant-qwen3-8b
       --host 0.0.0.0
       --port 30000
       --dtype bfloat16
@@ -26,6 +26,26 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    restart: unless-stopped
+
+  rag:
+    build:
+      context: .
+      dockerfile: Dockerfile.rag
+    container_name: rag-server
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - SGLANG_URL=http://sglang:30000
+      - EMBEDDING_URL=${EMBEDDING_URL:-http://sglang:30000}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-}
+      - EMBEDDING_CANDIDATE_LIMIT=${EMBEDDING_CANDIDATE_LIMIT:-30}
+      - EMBEDDING_WEIGHT=${EMBEDDING_WEIGHT:-35}
+    depends_on:
+      - sglang
     restart: unless-stopped
 
 volumes:
