@@ -48,6 +48,18 @@ services:
       - sglang
     restart: unless-stopped
 
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok
+    ports:
+      - "4040:4040"
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command: http --domain=eligibly-shove-cartload.ngrok-free.dev rag:8000
+    depends_on:
+      - rag
+    restart: unless-stopped
+
 volumes:
   hf-cache:
     driver: local
