@@ -186,7 +186,10 @@ def validate_answer(question: str, context: str, answer: str) -> dict:
                     "If the draft is valid, keep corrected_answer identical to the draft. "
                     "If the context is insufficient or does not support the draft, set valid to false "
                     "and write a corrected_answer using only supported context. "
-                    "If no supported answer can be written, say that reliable context was not found."
+                    "If no supported answer can be written, say that reliable context was not found. "
+                    "Also validate whether the answer stays focused on the user's direct intent. "
+                    "Mark the answer invalid if it adds unnecessary extra tips, optimization advice, enchantments, tools, or related mechanics that the user did not ask for. "
+                    "The corrected_answer should remove unsupported or off-intent details, even if those details are factually true. "
                 )
             },
             {
@@ -621,6 +624,11 @@ def generate_answer(question: str, context: str) -> str:
                     "If the reference information is insufficient, say that reliable context was not found "
                     "instead of guessing. "
                     "Use the following reference information to answer accurately:\n\n"
+                    "Answer only the user's direct intent. "
+                    "Do not add extra tips, related mechanics, optimization advice, tool recommendations, enchantments, drop-rate advice, or strategy details unless the user explicitly asks for them. "
+                    "If the user asks where to find something, focus on location, conditions, and search method only. "
+                    "If the user asks how to obtain or mine something, then include required tools or drop-related details only when directly necessary. "
+                    "Keep the answer concise, usually 1-3 sentences. "
                     f"{context}"
                 )
             },
