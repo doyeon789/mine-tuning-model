@@ -54,7 +54,7 @@ services:
     ports:
       - "4040:4040"
     environment:
-      - NGROK_AUTH_TOEKN=${NGROK_AUTH_TOEKN}
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
     command: http rag:800
     depends_on:
       - rag
