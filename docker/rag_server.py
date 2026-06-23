@@ -16,13 +16,6 @@ BLOCKED_RESULT_KEYWORDS = (
     "minecraft earth",
     "bedrock edition",
     "education edition",
-    "adventure chest",
-)
-DIAMOND_FALSE_CLAIMS = (
-    "diamonds form in the nether",
-    "diamonds spawn in the nether",
-    "find diamonds in the nether",
-    "light level detector",
 )
 NO_CONTEXT_ANSWER = (
     "I could not find reliable Minecraft Java Edition vanilla survival reference "
@@ -71,12 +64,15 @@ def validate_answer(question: str, context: str, answer: str) -> dict:
                 "content": (
                     "You are a strict Minecraft Java Edition vanilla survival fact checker. "
                     "Validate the draft answer against the reference context and rules. "
+                    "Every gameplay claim in corrected_answer must be supported by the reference context. "
                     "Reject unsupported claims, Minecraft Dungeons, Minecraft Legends, "
                     "Bedrock Edition, Education Edition, and outdated advice unless the user asked for them. "
                     "Return only valid JSON with this schema: "
                     "{\"valid\": boolean, \"issues\": string[], \"corrected_answer\": string}. "
                     "If the draft is valid, keep corrected_answer identical to the draft. "
-                    "If the context is insufficient, say so in corrected_answer instead of inventing facts."
+                    "If the context is insufficient or does not support the draft, set valid to false "
+                    "and write a corrected_answer using only supported context. "
+                    "If no supported answer can be written, say that reliable context was not found."
                 )
             },
             {
@@ -107,9 +103,12 @@ def validate_answer(question: str, context: str, answer: str) -> dict:
         raise HTTPException(status_code=503, detail=f"SGLang is not ready: {exc}") from exc
     except (KeyError, IndexError, ValueError, json.JSONDecodeError):
         return {
-            "valid": True,
+            "valid": False,
             "issues": ["Validation response could not be parsed."],
-            "corrected_answer": answer,
+            "corrected_answer": (
+                "I could not validate this answer against the retrieved Minecraft Java Edition "
+                "survival context, so I should not present it as reliable."
+            ),
         }
 
     validation.setdefault("valid", True)
@@ -129,14 +128,58 @@ def is_java_survival_result(result: dict) -> bool:
     return not any(keyword in text for keyword in BLOCKED_RESULT_KEYWORDS)
 
 
-def search_minecraft_info(query: str) -> str:
+def rewrite_search_query(question: str) -> str:
+    payload = {
+        "model": MODEL_NAME,
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "Rewrite the user's question into one concise web search query. "
+                    "Target only Minecraft Java Edition vanilla survival. "
+                    "Exclude Minecraft Dungeons, Minecraft Legends, Bedrock Edition, and Education Edition. "
+                    "Prefer current Java Edition information. "
+                    "Keep important item, mob, biome, structure, version, and mechanic names. "
+                    "Return only the search query. Do not answer the question."
+                )
+            },
+            {
+                "role": "user",
+                "content": question,
+            },
+        ],
+        "temperature": 0.1,
+        "top_p": 0.95,
+        "max_tokens": 80,
+        "chat_template_kwargs": {"enable_thinking": False},
+    }
+    try:
+        resp = requests.post(
+            f"{SGLANG_URL}/v1/chat/completions",
+            json=payload,
+            timeout=60,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        rewritten_query = get_message_text(data["choices"][0]["message"])
+    except (requests.RequestException, KeyError, IndexError, ValueError):
+        return question
+
+    rewritten_query = rewritten_query.strip().strip('"').strip("'")
+    rewritten_query = " ".join(rewritten_query.split())
+    return rewritten_query or question
+
+
+def search_minecraft_info(query: str) -> dict:
+    rewritten_query = rewrite_search_query(query)
     search_queries = [
+        rewritten_query,
         (
-            f"Minecraft Java Edition vanilla survival {query} "
+            f"Minecraft Java Edition vanilla survival {rewritten_query} "
             "-Dungeons -Legends -Bedrock -Education"
         ),
         (
-            f"site:minecraft.wiki Minecraft Java Edition vanilla survival {query} "
+            f"site:minecraft.wiki Minecraft Java Edition vanilla survival {rewritten_query} "
             "-Dungeons -Legends -Bedrock -Education"
         ),
     ]
@@ -158,7 +201,17 @@ def search_minecraft_info(query: str) -> str:
     context = "\n\n".join([
         f"- {result['content']}" for result in filtered_results
     ])
-    return context
+    return {
+        "query": rewritten_query,
+        "context": context,
+        "results": [
+            {
+                "title": result.get("title", ""),
+                "url": result.get("url", ""),
+            }
+            for result in filtered_results
+        ],
+    }
 
 
 def deterministic_validation(question: str, context: str, answer: str) -> dict | None:
@@ -168,27 +221,6 @@ def deterministic_validation(question: str, context: str, answer: str) -> dict |
             "issues": ["No reference context was retrieved."],
             "corrected_answer": NO_CONTEXT_ANSWER,
         }
-
-    lower_question = question.lower()
-    lower_answer = answer.lower()
-    if "diamond" in lower_question:
-        issues = [
-            claim for claim in DIAMOND_FALSE_CLAIMS
-            if claim in lower_answer
-        ]
-        if "nether" in lower_answer and "diamond" in lower_answer:
-            issues.append("Diamonds do not generate in the Nether in Java survival.")
-        if issues:
-            return {
-                "valid": False,
-                "issues": sorted(set(issues)),
-                "corrected_answer": (
-                    "For Minecraft Java Edition survival, mine for diamond ore in the Overworld, "
-                    "not the Nether. In modern versions, strip mining around Y=-58 or exploring "
-                    "deep caves is a common approach. Bring an iron pickaxe or better, watch for "
-                    "lava, and use Fortune if you have it."
-                ),
-            }
 
     return None
 
@@ -206,6 +238,9 @@ def generate_answer(question: str, context: str) -> str:
                     "Ignore Minecraft Dungeons, Minecraft Legends, Bedrock Edition, "
                     "Education Edition, and outdated version advice unless directly relevant. "
                     "If the reference information conflicts, prefer current Java Edition survival advice. "
+                    "Base the answer on the reference information. "
+                    "If the reference information is insufficient, say that reliable context was not found "
+                    "instead of guessing. "
                     "Use the following reference information to answer accurately:\n\n"
                     f"{context}"
                 )
@@ -251,11 +286,14 @@ def health():
 @app.post("/chat")
 def chat(body: Question):
     # 1. 웹 검색
-    context = search_minecraft_info(body.question)
+    search = search_minecraft_info(body.question)
+    context = search["context"]
     if not context.strip():
         validation = deterministic_validation(body.question, context, "")
         return {
             "question": body.question,
+            "search_query": search["query"],
+            "search_results": search["results"],
             "context": context,
             "answer": validation["corrected_answer"],
             "draft_answer": "",
@@ -269,6 +307,8 @@ def chat(body: Question):
 
     return {
         "question": body.question,
+        "search_query": search["query"],
+        "search_results": search["results"],
         "context": context,
         "answer": answer,
         "draft_answer": draft_answer,
