@@ -14,6 +14,10 @@ app = FastAPI()
 tavily = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
 SGLANG_URL = os.environ.get("SGLANG_URL", "http://sglang:30000")
 MODEL_NAME = "ddorin/minecraft-assistant-qwen3-8b"
+EMBEDDING_URL = os.environ.get("EMBEDDING_URL", SGLANG_URL)
+EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "").strip()
+EMBEDDING_CANDIDATE_LIMIT = int(os.environ.get("EMBEDDING_CANDIDATE_LIMIT", "30"))
+EMBEDDING_WEIGHT = float(os.environ.get("EMBEDDING_WEIGHT", "35"))
 BLOCKED_RESULT_KEYWORDS = (
     "minecraft dungeons",
     "minecraft legends",
@@ -319,6 +323,51 @@ def split_long_passage(text: str, max_chars: int = 900) -> list[str]:
     return chunks
 
 
+def cosine_similarity(left: list[float], right: list[float]) -> float:
+    dot = sum(left_value * right_value for left_value, right_value in zip(left, right))
+    left_norm = sum(value * value for value in left) ** 0.5
+    right_norm = sum(value * value for value in right) ** 0.5
+    if not left_norm or not right_norm:
+        return 0.0
+    return dot / (left_norm * right_norm)
+
+
+def get_embeddings(texts: list[str]) -> list[list[float]]:
+    if not EMBEDDING_MODEL or not texts:
+        return []
+
+    payload = {
+        "model": EMBEDDING_MODEL,
+        "input": texts,
+    }
+    try:
+        resp = requests.post(
+            f"{EMBEDDING_URL}/v1/embeddings",
+            json=payload,
+            timeout=60,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    except requests.RequestException:
+        return []
+
+    embeddings_by_index = {}
+    for item in data.get("data", []):
+        index = item.get("index")
+        embedding = item.get("embedding")
+        if isinstance(index, int) and isinstance(embedding, list):
+            embeddings_by_index[index] = embedding
+
+    embeddings = [
+        embeddings_by_index[index]
+        for index in range(len(texts))
+        if index in embeddings_by_index
+    ]
+    if len(embeddings) != len(texts):
+        return []
+    return embeddings
+
+
 def build_passages(results: list[dict]) -> list[dict]:
     passages = []
     for result in results:
@@ -346,7 +395,7 @@ def build_passages(results: list[dict]) -> list[dict]:
     return passages
 
 
-def rank_passage(passage: dict, question: str, search_query: str) -> float:
+def score_passage_keywords(passage: dict, question: str, search_query: str) -> float:
     title = passage.get("title", "")
     url = passage.get("url", "")
     text = passage.get("text", "")
@@ -367,6 +416,36 @@ def rank_passage(passage: dict, question: str, search_query: str) -> float:
     return keyword_score + (semantic_like_score * 10)
 
 
+def add_embedding_scores(
+    passages: list[dict],
+    question: str,
+    search_query: str,
+) -> list[dict]:
+    query_text = (
+        f"Question: {question}\n"
+        f"Search intent: {search_query}\n"
+        "Find the most relevant Minecraft Java Edition vanilla survival reference passage."
+    )
+    embedding_inputs = [query_text] + [
+        f"{passage.get('title', '')}\n{passage.get('text', '')}"
+        for passage in passages
+    ]
+    embeddings = get_embeddings(embedding_inputs)
+    if not embeddings:
+        for passage in passages:
+            passage["semantic_score"] = None
+            passage["hybrid_score"] = passage["keyword_score"]
+        return passages
+
+    query_embedding = embeddings[0]
+    passage_embeddings = embeddings[1:]
+    for passage, embedding in zip(passages, passage_embeddings):
+        semantic_score = cosine_similarity(query_embedding, embedding)
+        passage["semantic_score"] = semantic_score
+        passage["hybrid_score"] = passage["keyword_score"] + (semantic_score * EMBEDDING_WEIGHT)
+    return passages
+
+
 def select_passages(
     question: str,
     search_query: str,
@@ -374,9 +453,19 @@ def select_passages(
     max_passages: int = 6,
 ) -> list[dict]:
     passages = build_passages(results)
-    ranked = sorted(
+    for passage in passages:
+        passage["keyword_score"] = score_passage_keywords(passage, question, search_query)
+
+    candidates = sorted(
         passages,
-        key=lambda passage: rank_passage(passage, question, search_query),
+        key=lambda passage: passage["keyword_score"],
+        reverse=True,
+    )[:EMBEDDING_CANDIDATE_LIMIT]
+
+    scored_candidates = add_embedding_scores(candidates, question, search_query)
+    ranked = sorted(
+        scored_candidates,
+        key=lambda passage: passage.get("hybrid_score", passage["keyword_score"]),
         reverse=True,
     )
     return ranked[:max_passages]
@@ -495,6 +584,9 @@ def search_minecraft_info(query: str) -> dict:
                 "title": passage.get("title", ""),
                 "url": passage.get("url", ""),
                 "text": passage.get("text", ""),
+                "keyword_score": passage.get("keyword_score"),
+                "semantic_score": passage.get("semantic_score"),
+                "hybrid_score": passage.get("hybrid_score"),
             }
             for passage in selected_passages
         ],

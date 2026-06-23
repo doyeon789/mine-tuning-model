@@ -40,6 +40,10 @@ services:
     environment:
       - TAVILY_API_KEY=${TAVILY_API_KEY}
       - SGLANG_URL=http://sglang:30000
+      - EMBEDDING_URL=${EMBEDDING_URL:-http://sglang:30000}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-}
+      - EMBEDDING_CANDIDATE_LIMIT=${EMBEDDING_CANDIDATE_LIMIT:-30}
+      - EMBEDDING_WEIGHT=${EMBEDDING_WEIGHT:-35}
     depends_on:
       - sglang
     restart: unless-stopped
