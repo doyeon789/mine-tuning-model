@@ -55,7 +55,7 @@ services:
       - "4040:4040"
     environment:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
-    command: http rag:8000
+    command: http --domain=eligibly-shove-cartload.ngrok-free.dev rag:8000
     depends_on:
       - rag
     restart: unless-stopped
