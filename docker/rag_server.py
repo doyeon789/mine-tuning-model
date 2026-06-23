@@ -4,6 +4,7 @@ from tavily import TavilyClient
 import requests
 import json
 import os
+from urllib.parse import urlparse
 
 app = FastAPI()
 
@@ -16,6 +17,21 @@ BLOCKED_RESULT_KEYWORDS = (
     "minecraft earth",
     "bedrock edition",
     "education edition",
+    "april fools",
+    "potato dimension",
+    "24w14potato",
+    "potone",
+)
+ALLOWED_WIKI_HOSTS = {"minecraft.wiki", "www.minecraft.wiki"}
+BLOCKED_WIKI_NAMESPACES = (
+    "talk:",
+    "user:",
+    "file:",
+    "category:",
+    "template:",
+    "module:",
+    "special:",
+    "help:",
 )
 PREFERRED_SOURCE_KEYWORDS = (
     "ore",
@@ -134,6 +150,15 @@ def validate_answer(question: str, context: str, answer: str) -> dict:
 
 
 def is_java_survival_result(result: dict) -> bool:
+    parsed_url = urlparse(result.get("url", ""))
+    host = parsed_url.netloc.lower()
+    if host not in ALLOWED_WIKI_HOSTS:
+        return False
+
+    article_path = parsed_url.path.removeprefix("/w/").lower()
+    if article_path.startswith(BLOCKED_WIKI_NAMESPACES):
+        return False
+
     text = " ".join(
         [
             result.get("title", ""),
