@@ -4,6 +4,9 @@ from tavily import TavilyClient
 import requests
 import json
 import os
+import re
+from html import unescape
+from html.parser import HTMLParser
 from urllib.parse import urlparse
 
 app = FastAPI()
@@ -49,6 +52,31 @@ WEAK_SOURCE_KEYWORDS = (
     "beginner",
     "getting max gear",
 )
+PASSAGE_PREFERRED_KEYWORDS = (
+    "natural generation",
+    "obtaining",
+    "crafting",
+    "usage",
+    "spawning",
+    "drops",
+    "trading",
+    "breeding",
+    "taming",
+    "generation",
+    "y=",
+    "y level",
+    "overworld",
+)
+PASSAGE_WEAK_KEYWORDS = (
+    "history",
+    "gallery",
+    "trivia",
+    "sounds",
+    "data values",
+    "issues",
+    "references",
+    "external links",
+)
 NO_CONTEXT_ANSWER = (
     "I could not find reliable Minecraft Java Edition vanilla survival reference "
     "context for that question, so I should not guess."
@@ -56,6 +84,56 @@ NO_CONTEXT_ANSWER = (
 
 class Question(BaseModel):
     question: str
+
+
+class WikiTextParser(HTMLParser):
+    BLOCK_TAGS = {"p", "li", "dd", "dt", "h2", "h3", "h4"}
+    SKIP_TAGS = {"script", "style", "table", "sup", "math", "figure"}
+
+    def __init__(self):
+        super().__init__()
+        self.blocks = []
+        self.current = []
+        self.current_tag = None
+        self.skip_depth = 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag in self.SKIP_TAGS:
+            self.skip_depth += 1
+            return
+        if self.skip_depth:
+            return
+        if tag in self.BLOCK_TAGS:
+            self._flush()
+            self.current_tag = tag
+
+    def handle_endtag(self, tag):
+        if tag in self.SKIP_TAGS and self.skip_depth:
+            self.skip_depth -= 1
+            return
+        if self.skip_depth:
+            return
+        if tag in self.BLOCK_TAGS:
+            self._flush()
+            self.current_tag = None
+
+    def handle_data(self, data):
+        if self.skip_depth or not self.current_tag:
+            return
+        self.current.append(data)
+
+    def _flush(self):
+        text = normalize_text(" ".join(self.current))
+        if text:
+            self.blocks.append(text)
+        self.current = []
+
+
+def normalize_text(text: str) -> str:
+    text = unescape(text)
+    text = re.sub(r"\[[^\]]*\]", "", text)
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
 
 
 def extract_json_object(text: str) -> dict:
@@ -174,10 +252,15 @@ def keyword_terms(text: str) -> set[str]:
         char.lower() if char.isalnum() else " "
         for char in text
     )
-    return {
+    terms = {
         term for term in normalized.split()
         if len(term) > 2 and term not in {"minecraft", "java", "edition", "survival"}
     }
+    singular_terms = {
+        term[:-1] for term in terms
+        if len(term) > 3 and term.endswith("s")
+    }
+    return terms | singular_terms
 
 
 def rank_search_result(result: dict, query: str) -> int:
@@ -199,6 +282,104 @@ def rank_search_result(result: dict, query: str) -> int:
     if "minecraft.wiki/w/" in url.lower():
         score += 4
     return score
+
+
+def fetch_wiki_blocks(url: str) -> list[str]:
+    try:
+        resp = requests.get(
+            url,
+            headers={"User-Agent": "mine-tuning-rag/0.1"},
+            timeout=15,
+        )
+        resp.raise_for_status()
+    except requests.RequestException:
+        return []
+
+    parser = WikiTextParser()
+    parser.feed(resp.text)
+    parser.close()
+    return parser.blocks
+
+
+def split_long_passage(text: str, max_chars: int = 900) -> list[str]:
+    if len(text) <= max_chars:
+        return [text]
+
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+    chunks = []
+    current = ""
+    for sentence in sentences:
+        if len(current) + len(sentence) + 1 > max_chars and current:
+            chunks.append(current.strip())
+            current = sentence
+        else:
+            current = f"{current} {sentence}".strip()
+    if current:
+        chunks.append(current.strip())
+    return chunks
+
+
+def build_passages(results: list[dict]) -> list[dict]:
+    passages = []
+    for result in results:
+        title = result.get("title", "")
+        url = result.get("url", "")
+        blocks = fetch_wiki_blocks(url)
+        current_section = ""
+        for block in blocks:
+            if len(block) < 80:
+                if 3 <= len(block) <= 70:
+                    current_section = block
+                continue
+            if any(keyword in block.lower() for keyword in BLOCKED_RESULT_KEYWORDS):
+                continue
+            sectioned_block = (
+                f"Section: {current_section}. {block}"
+                if current_section else block
+            )
+            for chunk in split_long_passage(sectioned_block):
+                passages.append({
+                    "title": title,
+                    "url": url,
+                    "text": chunk,
+                })
+    return passages
+
+
+def rank_passage(passage: dict, question: str, search_query: str) -> float:
+    title = passage.get("title", "")
+    url = passage.get("url", "")
+    text = passage.get("text", "")
+    title_url = f"{title} {url}".lower()
+    passage_text = text.lower()
+    target_terms = keyword_terms(f"{question} {search_query}")
+
+    keyword_score = 0.0
+    keyword_score += 8 * sum(1 for term in target_terms if term in title_url)
+    keyword_score += 3 * sum(1 for term in target_terms if term in passage_text)
+    keyword_score += 5 * sum(1 for keyword in PASSAGE_PREFERRED_KEYWORDS if keyword in passage_text)
+    keyword_score -= 8 * sum(1 for keyword in PASSAGE_WEAK_KEYWORDS if keyword in passage_text[:120].lower())
+
+    passage_terms = keyword_terms(text)
+    overlap = len(target_terms & passage_terms)
+    semantic_like_score = overlap / max(len(target_terms), 1)
+
+    return keyword_score + (semantic_like_score * 10)
+
+
+def select_passages(
+    question: str,
+    search_query: str,
+    results: list[dict],
+    max_passages: int = 6,
+) -> list[dict]:
+    passages = build_passages(results)
+    ranked = sorted(
+        passages,
+        key=lambda passage: rank_passage(passage, question, search_query),
+        reverse=True,
+    )
+    return ranked[:max_passages]
 
 
 def rewrite_search_query(question: str) -> str:
@@ -279,14 +460,26 @@ def search_minecraft_info(query: str) -> dict:
         if filtered_results:
             break
 
-    context = "\n\n".join([
-        "\n".join([
-            f"Source: {result.get('title', '')}",
-            f"URL: {result.get('url', '')}",
-            f"Content: {result.get('content', '')}",
+    selected_passages = select_passages(query, rewritten_query, filtered_results)
+    if selected_passages:
+        context = "\n\n".join([
+            "\n".join([
+                f"Source: {passage.get('title', '')}",
+                f"URL: {passage.get('url', '')}",
+                f"Passage: {passage.get('text', '')}",
+            ])
+            for passage in selected_passages
         ])
-        for result in filtered_results
-    ])
+    else:
+        context = "\n\n".join([
+            "\n".join([
+                f"Source: {result.get('title', '')}",
+                f"URL: {result.get('url', '')}",
+                f"Content: {result.get('content', '')}",
+            ])
+            for result in filtered_results
+        ])
+
     return {
         "query": rewritten_query,
         "context": context,
@@ -296,6 +489,14 @@ def search_minecraft_info(query: str) -> dict:
                 "url": result.get("url", ""),
             }
             for result in filtered_results
+        ],
+        "passages": [
+            {
+                "title": passage.get("title", ""),
+                "url": passage.get("url", ""),
+                "text": passage.get("text", ""),
+            }
+            for passage in selected_passages
         ],
     }
 
@@ -380,6 +581,7 @@ def chat(body: Question):
             "question": body.question,
             "search_query": search["query"],
             "search_results": search["results"],
+            "retrieved_passages": search["passages"],
             "context": context,
             "answer": validation["corrected_answer"],
             "draft_answer": "",
@@ -395,6 +597,7 @@ def chat(body: Question):
         "question": body.question,
         "search_query": search["query"],
         "search_results": search["results"],
+        "retrieved_passages": search["passages"],
         "context": context,
         "answer": answer,
         "draft_answer": draft_answer,
