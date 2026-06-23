@@ -17,6 +17,22 @@ BLOCKED_RESULT_KEYWORDS = (
     "bedrock edition",
     "education edition",
 )
+PREFERRED_SOURCE_KEYWORDS = (
+    "ore",
+    "generation",
+    "mechanics",
+    "trading",
+    "enchanting",
+    "villager",
+    "biome",
+    "structure",
+    "mob",
+)
+WEAK_SOURCE_KEYWORDS = (
+    "tutorial:",
+    "beginner",
+    "getting max gear",
+)
 NO_CONTEXT_ANSWER = (
     "I could not find reliable Minecraft Java Edition vanilla survival reference "
     "context for that question, so I should not guess."
@@ -128,6 +144,38 @@ def is_java_survival_result(result: dict) -> bool:
     return not any(keyword in text for keyword in BLOCKED_RESULT_KEYWORDS)
 
 
+def keyword_terms(text: str) -> set[str]:
+    normalized = "".join(
+        char.lower() if char.isalnum() else " "
+        for char in text
+    )
+    return {
+        term for term in normalized.split()
+        if len(term) > 2 and term not in {"minecraft", "java", "edition", "survival"}
+    }
+
+
+def rank_search_result(result: dict, query: str) -> int:
+    title = result.get("title", "")
+    url = result.get("url", "")
+    content = result.get("content", "")
+    title_url = f"{title} {url}".lower()
+    all_text = f"{title_url} {content}".lower()
+    query_terms = keyword_terms(query)
+
+    score = 0
+    score += 8 * sum(1 for term in query_terms if term in title_url)
+    score += 2 * sum(1 for term in query_terms if term in all_text)
+    score += 6 * sum(1 for keyword in PREFERRED_SOURCE_KEYWORDS if keyword in title_url)
+    score -= 12 * sum(1 for keyword in WEAK_SOURCE_KEYWORDS if keyword in title_url)
+
+    if "/tutorial:" in url.lower():
+        score -= 8
+    if "minecraft.wiki/w/" in url.lower():
+        score += 4
+    return score
+
+
 def rewrite_search_query(question: str) -> str:
     payload = {
         "model": MODEL_NAME,
@@ -135,11 +183,14 @@ def rewrite_search_query(question: str) -> str:
             {
                 "role": "system",
                 "content": (
-                    "Rewrite the user's question into one concise web search query. "
+                    "Rewrite the user's question into one concise web search query for source documents. "
                     "Target only Minecraft Java Edition vanilla survival. "
                     "Exclude Minecraft Dungeons, Minecraft Legends, Bedrock Edition, and Education Edition. "
                     "Prefer current Java Edition information. "
                     "Keep important item, mob, biome, structure, version, and mechanic names. "
+                    "Prefer Minecraft Wiki source-document terms such as block, item, mob, biome, "
+                    "structure, mechanics, generation, loot, trading, or enchanting. "
+                    "Avoid broad tutorial or beginner-guide wording unless the user asks for a tutorial. "
                     "Return only the search query. Do not answer the question."
                 )
             },
@@ -173,15 +224,15 @@ def rewrite_search_query(question: str) -> str:
 def search_minecraft_info(query: str) -> dict:
     rewritten_query = rewrite_search_query(query)
     search_queries = [
+        (
+            f"site:minecraft.wiki/w {rewritten_query} "
+            "-Dungeons -Legends -Bedrock -Education"
+        ),
+        (
+            f"minecraft.wiki {rewritten_query} Java Edition mechanics generation "
+            "-Dungeons -Legends -Bedrock -Education"
+        ),
         rewritten_query,
-        (
-            f"Minecraft Java Edition vanilla survival {rewritten_query} "
-            "-Dungeons -Legends -Bedrock -Education"
-        ),
-        (
-            f"site:minecraft.wiki Minecraft Java Edition vanilla survival {rewritten_query} "
-            "-Dungeons -Legends -Bedrock -Education"
-        ),
     ]
     filtered_results = []
     for search_query in search_queries:
@@ -194,12 +245,22 @@ def search_minecraft_info(query: str) -> dict:
         filtered_results = [
             result for result in results.get("results", [])
             if is_java_survival_result(result)
-        ][:3]
+        ]
+        filtered_results = sorted(
+            filtered_results,
+            key=lambda result: rank_search_result(result, rewritten_query),
+            reverse=True,
+        )[:3]
         if filtered_results:
             break
 
     context = "\n\n".join([
-        f"- {result['content']}" for result in filtered_results
+        "\n".join([
+            f"Source: {result.get('title', '')}",
+            f"URL: {result.get('url', '')}",
+            f"Content: {result.get('content', '')}",
+        ])
+        for result in filtered_results
     ])
     return {
         "query": rewritten_query,
