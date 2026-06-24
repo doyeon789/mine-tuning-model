@@ -18,6 +18,8 @@ EMBEDDING_URL = os.environ.get("EMBEDDING_URL", SGLANG_URL)
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "").strip()
 EMBEDDING_CANDIDATE_LIMIT = int(os.environ.get("EMBEDDING_CANDIDATE_LIMIT", "30"))
 EMBEDDING_WEIGHT = float(os.environ.get("EMBEDDING_WEIGHT", "35"))
+PASSAGE_MAX_CHARS = int(os.environ.get("PASSAGE_MAX_CHARS", "900"))
+PASSAGE_OVERLAP_SENTENCES = int(os.environ.get("PASSAGE_OVERLAP_SENTENCES", "1"))
 BLOCKED_RESULT_KEYWORDS = (
     "minecraft dungeons",
     "minecraft legends",
@@ -308,21 +310,39 @@ def fetch_wiki_blocks(url: str) -> list[str]:
     return parser.blocks
 
 
-def split_long_passage(text: str, max_chars: int = 900) -> list[str]:
+def split_sentences(text: str) -> list[str]:
+    return [
+        sentence.strip()
+        for sentence in re.split(r"(?<=[.!?])\s+", text)
+        if sentence.strip()
+    ]
+
+
+def split_long_passage(
+    text: str,
+    max_chars: int = PASSAGE_MAX_CHARS,
+    overlap_sentences: int = PASSAGE_OVERLAP_SENTENCES,
+) -> list[str]:
     if len(text) <= max_chars:
         return [text]
 
-    sentences = re.split(r"(?<=[.!?])\s+", text)
+    sentences = split_sentences(text)
     chunks = []
-    current = ""
+    current_sentences = []
     for sentence in sentences:
-        if len(current) + len(sentence) + 1 > max_chars and current:
-            chunks.append(current.strip())
-            current = sentence
-        else:
-            current = f"{current} {sentence}".strip()
+        current_text = " ".join(current_sentences)
+        next_length = len(current_text) + len(sentence) + 1
+        if next_length > max_chars and current_sentences:
+            chunks.append(" ".join(current_sentences).strip())
+            current_sentences = (
+                current_sentences[-overlap_sentences:]
+                if overlap_sentences else []
+            )
+        current_sentences.append(sentence)
+
+    current = " ".join(current_sentences).strip()
     if current:
-        chunks.append(current.strip())
+        chunks.append(current)
     return chunks
 
 
