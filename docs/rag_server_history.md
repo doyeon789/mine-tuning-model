@@ -14,16 +14,17 @@
 
 ## 주요 변천사
 
-| 단계 | 커밋      | 변경 내용                                                         | 해결하려던 문제                                                 |
-| ---- | --------- | ----------------------------------------------------------------- | --------------------------------------------------------------- |
-| 1    | `03928d8` | FastAPI RAG 서버 생성, Tavily 검색, SGLang 호출 추가              | 검색 기반 답변 API의 기본 구조 생성                             |
-| 2    | `ffe8431` | 답변 grounding, SGLang 응답 파싱, 검증 단계 추가                  | `answer: null`, 근거 없는 답변, 서버 오류 대응                  |
-| 3    | `5d15371` | 검색어 재작성 단계 추가                                           | 사용자의 짧은 질문을 Minecraft Wiki 검색에 맞는 질의로 바꾸기   |
-| 4    | `74d08e0` | 검색 결과 랭킹 개선                                               | 튜토리얼/초보자 가이드보다 원문 문서 우선                       |
-| 5    | `e42f833` | wiki 소스 필터 강화                                               | Hypixel SkyBlock, Talk 문서, April Fools 문서 등 오염 결과 제거 |
-| 6    | `380b35b` | Minecraft Wiki 페이지 본문 fetch, passage 분할, passage 랭킹 추가 | 검색 스니펫에 필요한 정보가 빠지는 문제 해결                    |
-| 7    | `cef4c53` | hybrid retriever 구조 추가, 임베딩 rerank 옵션 추가               | 키워드 랭킹과 semantic similarity를 함께 사용할 수 있게 준비    |
-| 8    | 미커밋    | 질문 의도 중심 프롬프트 추가                                      | 사실은 맞지만 질문 목적에서 벗어난 부가 팁 제거                 |
+| 단계 | 커밋 | 변경 내용 | 해결하려던 문제 |
+| --- | --- | --- | --- |
+| 1 | `03928d8` | FastAPI RAG 서버 생성, Tavily 검색, SGLang 호출 추가 | 검색 기반 답변 API의 기본 구조 생성 |
+| 2 | `ffe8431` | 답변 grounding, SGLang 응답 파싱, 검증 단계 추가 | `answer: null`, 근거 없는 답변, 서버 오류 대응 |
+| 3 | `5d15371` | 검색어 재작성 단계 추가 | 사용자의 짧은 질문을 Minecraft Wiki 검색에 맞는 질의로 바꾸기 |
+| 4 | `74d08e0` | 검색 결과 랭킹 개선 | 튜토리얼/초보자 가이드보다 원문 문서 우선 |
+| 5 | `e42f833` | wiki 소스 필터 강화 | Hypixel SkyBlock, Talk 문서, April Fools 문서 등 오염 결과 제거 |
+| 6 | `380b35b` | Minecraft Wiki 페이지 본문 fetch, passage 분할, passage 랭킹 추가 | 검색 스니펫에 필요한 정보가 빠지는 문제 해결 |
+| 7 | `cef4c53` | hybrid retriever 구조 추가, 임베딩 rerank 옵션 추가 | 키워드 랭킹과 semantic similarity를 함께 사용할 수 있게 준비 |
+| 8 | `54cfae3` | passage chunk overlap 추가 | 긴 본문을 자를 때 핵심 문맥이 앞뒤로 끊기는 문제 완화 |
+| 9 | `5221bd8` | RRF rerank 추가 | keyword, source, semantic 순위를 안정적으로 결합 |
 
 ## 답변 변화
 
@@ -44,7 +45,7 @@ null
 최종 답변:
 
 ```text
-dig in and around mountain ranges, diamonds form in the nether too — strip mine at y -58 is a popular spot
+dig in and around mountain ranges, diamonds form in the nether too - strip mine at y -58 is a popular spot
 ```
 
 문제:
@@ -73,7 +74,7 @@ I could not find reliable Minecraft Java Edition vanilla survival reference cont
 최종 답변:
 
 ```text
-diamonds are in caves and can also be found with fortune on a pickaxe — strip mining is reliable
+diamonds are in caves and can also be found with fortune on a pickaxe - strip mining is reliable
 ```
 
 문제:
@@ -115,6 +116,61 @@ Look for diamond ore in caves or by mining at y-levels -58 to -64 in 1.18+ or y-
 - `fortune III boosts yields`는 사실일 수 있지만, "어디서 찾는가"라는 질문 의도에는 부가적인 정보다.
 - 도구, 인챈트, 수확량 팁은 사용자가 직접 물었을 때만 나오는 편이 좋다.
 
+## 최신 retriever 개선
+
+### Passage chunk overlap
+
+커밋:
+
+```text
+54cfae3 feat: rag passage chunk 개선
+```
+
+변경 내용:
+
+- 긴 wiki 본문을 문장 단위로 자른다.
+- 다음 chunk에 이전 chunk의 마지막 문장 일부를 겹쳐 넣는다.
+- `PASSAGE_MAX_CHARS`, `PASSAGE_OVERLAP_SENTENCES` 환경변수로 조절할 수 있다.
+
+기대 효과:
+
+- `Natural generation`처럼 앞 문맥이 중요한 문단이 잘릴 위험을 줄인다.
+- passage 하나만 봐도 답변에 필요한 문맥이 더 잘 남는다.
+
+### RRF rerank
+
+커밋:
+
+```text
+5221bd8 perf: rag rrf rerank 성능 개선
+```
+
+변경 내용:
+
+- keyword 순위, source 순위, semantic 순위를 RRF로 결합한다.
+- 임베딩 모델이 설정되어 있으면 semantic 순위도 결합한다.
+- 임베딩 모델이 없으면 keyword 순위와 source 순위만으로 RRF를 계산한다.
+- `RRF_K` 환경변수로 RRF 민감도를 조절할 수 있다.
+- `retrieved_passages`에 디버깅용 ranking 정보를 추가했다.
+
+추가된 디버깅 필드:
+
+```json
+{
+  "section": "Natural generation",
+  "source_rank": 1,
+  "keyword_rank": 2,
+  "semantic_rank": null,
+  "rrf_score": 0.0325
+}
+```
+
+기대 효과:
+
+- keyword 점수 하나가 최종 순위를 과하게 지배하는 문제를 줄인다.
+- Tavily 검색 순위가 좋은 source와 질문 키워드에 잘 맞는 passage를 균형 있게 선택한다.
+- semantic rerank가 켜졌을 때도 점수 스케일 차이 때문에 순위가 흔들리는 문제를 줄인다.
+
 ## 현재 최종 답변 목표
 
 `How do I find diamonds ?` 같은 위치 질문에는 다음처럼 짧고 목적에 맞는 답변을 목표로 한다.
@@ -144,9 +200,23 @@ Look for diamond ore in the Overworld between Y=14 and Y=-63 in Minecraft 1.18+,
 4. Java Edition 바닐라 야생과 맞지 않는 결과 제거
 5. 검색 결과 URL의 실제 wiki 본문 fetch
 6. 본문을 passage 단위로 분할
-7. 키워드 점수로 passage 후보 압축
-8. 임베딩 모델이 설정된 경우 semantic similarity를 섞어 hybrid rerank
-9. 선택된 passage로 context 구성
-10. SGLang으로 초안 답변 생성
-11. SGLang으로 근거 검증 및 off-intent detail 제거
-12. 최종 `answer` 반환
+7. 긴 passage는 문장 단위로 자르고 overlap을 적용
+8. 키워드 점수로 passage 후보 랭킹
+9. 임베딩 모델이 설정된 경우 semantic similarity 계산
+10. keyword, source, semantic 순위를 RRF로 결합
+11. 선택된 passage로 context 구성
+12. SGLang으로 초안 답변 생성
+13. SGLang으로 근거 검증 및 off-intent detail 제거
+14. 최종 `answer` 반환
+
+## 다음 개선 후보
+
+- 답변 언어 변환은 생성/검증 프롬프트에 섞기보다, 검증된 최종 답변을 별도 번역 단계에서 처리한다.
+- `retrieved_passages`를 테스트 로그로 남겨 어떤 passage가 최종 답변에 영향을 줬는지 비교한다.
+- 다이아몬드 외 질문으로도 retriever 품질을 확인한다.
+  - 조합법
+  - 몹 드롭
+  - 바이옴 위치
+  - 구조물 전리품
+  - 주민 거래
+  - 인챈트 메커니즘
