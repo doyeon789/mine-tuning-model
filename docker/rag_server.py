@@ -20,6 +20,7 @@ EMBEDDING_CANDIDATE_LIMIT = int(os.environ.get("EMBEDDING_CANDIDATE_LIMIT", "30"
 EMBEDDING_WEIGHT = float(os.environ.get("EMBEDDING_WEIGHT", "35"))
 PASSAGE_MAX_CHARS = int(os.environ.get("PASSAGE_MAX_CHARS", "900"))
 PASSAGE_OVERLAP_SENTENCES = int(os.environ.get("PASSAGE_OVERLAP_SENTENCES", "1"))
+RRF_K = int(os.environ.get("RRF_K", "60"))
 BLOCKED_RESULT_KEYWORDS = (
     "minecraft dungeons",
     "minecraft legends",
@@ -393,7 +394,7 @@ def get_embeddings(texts: list[str]) -> list[list[float]]:
 
 def build_passages(results: list[dict]) -> list[dict]:
     passages = []
-    for result in results:
+    for source_rank, result in enumerate(results, start=1):
         title = result.get("title", "")
         url = result.get("url", "")
         blocks = fetch_wiki_blocks(url)
@@ -413,6 +414,8 @@ def build_passages(results: list[dict]) -> list[dict]:
                 passages.append({
                     "title": title,
                     "url": url,
+                    "section": current_section,
+                    "source_rank": source_rank,
                     "text": chunk,
                 })
     return passages
@@ -437,6 +440,35 @@ def score_passage_keywords(passage: dict, question: str, search_query: str) -> f
     semantic_like_score = overlap / max(len(target_terms), 1)
 
     return keyword_score + (semantic_like_score * 10)
+
+
+def ranked_indices(
+    passages: list[dict],
+    score_key: str,
+    indices: list[int] | None = None,
+) -> list[int]:
+    target_indices = indices if indices is not None else list(range(len(passages)))
+    return sorted(
+        target_indices,
+        key=lambda index: passages[index].get(score_key) or 0,
+        reverse=True,
+    )
+
+
+def apply_rank_metadata(passages: list[dict], ranked: list[int], rank_key: str) -> None:
+    for rank, index in enumerate(ranked, start=1):
+        passages[index][rank_key] = rank
+
+
+def rrf_score(rankings: list[list[int]], index: int) -> float:
+    score = 0.0
+    for ranking in rankings:
+        try:
+            rank = ranking.index(index) + 1
+        except ValueError:
+            continue
+        score += 1 / (RRF_K + rank)
+    return score
 
 
 def add_embedding_scores(
@@ -476,19 +508,43 @@ def select_passages(
     max_passages: int = 6,
 ) -> list[dict]:
     passages = build_passages(results)
+    if not passages:
+        return []
+
     for passage in passages:
         passage["keyword_score"] = score_passage_keywords(passage, question, search_query)
 
-    candidates = sorted(
-        passages,
-        key=lambda passage: passage["keyword_score"],
-        reverse=True,
-    )[:EMBEDDING_CANDIDATE_LIMIT]
+    keyword_ranked = ranked_indices(passages, "keyword_score")
+    source_ranked = sorted(
+        range(len(passages)),
+        key=lambda index: passages[index].get("source_rank", 9999),
+    )
+    apply_rank_metadata(passages, keyword_ranked, "keyword_rank")
+    apply_rank_metadata(passages, source_ranked, "source_rank_overall")
 
-    scored_candidates = add_embedding_scores(candidates, question, search_query)
+    candidate_indices = list(dict.fromkeys(
+        keyword_ranked[:EMBEDDING_CANDIDATE_LIMIT]
+        + source_ranked[:EMBEDDING_CANDIDATE_LIMIT]
+    ))
+    candidates = [passages[index] for index in candidate_indices]
+    add_embedding_scores(candidates, question, search_query)
+
+    semantic_ranked = []
+    if any(passage.get("semantic_score") is not None for passage in passages):
+        semantic_ranked = ranked_indices(passages, "semantic_score", candidate_indices)
+        apply_rank_metadata(passages, semantic_ranked, "semantic_rank")
+
+    rankings = [keyword_ranked, source_ranked]
+    if semantic_ranked:
+        rankings.append(semantic_ranked)
+
+    for index, passage in enumerate(passages):
+        passage["rrf_score"] = rrf_score(rankings, index)
+        passage["hybrid_score"] = passage["rrf_score"]
+
     ranked = sorted(
-        scored_candidates,
-        key=lambda passage: passage.get("hybrid_score", passage["keyword_score"]),
+        passages,
+        key=lambda passage: passage["rrf_score"],
         reverse=True,
     )
     return ranked[:max_passages]
@@ -606,9 +662,14 @@ def search_minecraft_info(query: str) -> dict:
             {
                 "title": passage.get("title", ""),
                 "url": passage.get("url", ""),
+                "section": passage.get("section", ""),
                 "text": passage.get("text", ""),
+                "source_rank": passage.get("source_rank"),
+                "keyword_rank": passage.get("keyword_rank"),
+                "semantic_rank": passage.get("semantic_rank"),
                 "keyword_score": passage.get("keyword_score"),
                 "semantic_score": passage.get("semantic_score"),
+                "rrf_score": passage.get("rrf_score"),
                 "hybrid_score": passage.get("hybrid_score"),
             }
             for passage in selected_passages
