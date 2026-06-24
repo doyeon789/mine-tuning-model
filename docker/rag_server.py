@@ -63,6 +63,9 @@ PASSAGE_PREFERRED_KEYWORDS = (
     "natural generation",
     "obtaining",
     "crafting",
+    "crafting table",
+    "recipe",
+    "slots",
     "usage",
     "spawning",
     "drops",
@@ -94,8 +97,8 @@ class Question(BaseModel):
 
 
 class WikiTextParser(HTMLParser):
-    BLOCK_TAGS = {"p", "li", "dd", "dt", "h2", "h3", "h4"}
-    SKIP_TAGS = {"script", "style", "table", "sup", "math", "figure"}
+    BLOCK_TAGS = {"p", "li", "dd", "dt", "h2", "h3", "h4", "table"}
+    SKIP_TAGS = {"script", "style", "sup", "math", "figure"}
 
     def __init__(self):
         super().__init__()
@@ -195,6 +198,7 @@ def validate_answer(question: str, context: str, answer: str) -> dict:
                     "The corrected_answer should remove unsupported or off-intent details, even if those details are factually true. "
                     "If the question asks for a crafting recipe, corrected_answer should preserve a numbered slot explanation when the recipe uses a 3x3 crafting table. "
                     "Use the slot layout 1 2 3 / 4 5 6 / 7 8 9, list occupied slots, and do not invent ingredients unsupported by the context. "
+                    "Mark a crafting-table recipe answer invalid if it only says prose such as 'three on top' and omits numbered slots. "
                 )
             },
             {
@@ -714,6 +718,7 @@ def generate_answer(question: str, context: str) -> str:
                     "Use this slot layout: 1 2 3 / 4 5 6 / 7 8 9. "
                     "List only occupied slots and say that other slots should be empty. "
                     "For example, an iron pickaxe should be explained as slots 1, 2, and 3 = iron ingots, and slots 5 and 8 = sticks. "
+                    "Do not answer crafting-table recipes only as prose such as 'three on top and two sticks below'. "
                     "Do not add extra tips, related mechanics, optimization advice, tool recommendations, enchantments, drop-rate advice, or strategy details unless the user explicitly asks for them. "
                     "Beginner guidance is allowed when it explains the direct answer, but avoid advanced optimization or unrelated tips. "
                     "If the user asks where to find something, focus on location, conditions, and search method only. "
