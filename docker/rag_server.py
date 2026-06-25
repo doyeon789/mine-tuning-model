@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from tavily import TavilyClient
 import requests
 import json
@@ -89,8 +89,24 @@ NO_CONTEXT_ANSWER = (
     "context for that question, so I should not guess."
 )
 
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+
 class Question(BaseModel):
     question: str
+    history: list[ChatMessage] = Field(default_factory=list)
+
+
+def format_conversation_history(history: list[ChatMessage], max_messages: int = 8) -> str:
+    lines = []
+    for message in history[-max_messages:]:
+        role = "assistant" if message.role == "assistant" else "user"
+        content = normalize_text(message.content)
+        if content:
+            lines.append(f"{role}: {content}")
+    return "\n".join(lines)
 
 
 class WikiTextParser(HTMLParser):
@@ -168,7 +184,12 @@ def get_message_text(message: dict) -> str:
     raise HTTPException(status_code=502, detail="SGLang returned an empty answer")
 
 
-def validate_answer(question: str, context: str, answer: str) -> dict:
+def validate_answer(
+    question: str,
+    context: str,
+    answer: str,
+    conversation_history: str = "",
+) -> dict:
     deterministic_result = deterministic_validation(question, context, answer)
     if deterministic_result is not None:
         return deterministic_result
@@ -192,6 +213,9 @@ def validate_answer(question: str, context: str, answer: str) -> dict:
                     "If no supported answer can be written, say that reliable context was not found. "
                     "Also validate whether the answer stays focused on the user's direct intent. "
                     "Mark the answer invalid if it adds unnecessary extra tips, optimization advice, enchantments, tools, or related mechanics that the user did not ask for. "
+                    "The answer must sound warm, patient, and beginner-friendly, not blunt or dismissive. "
+                    "When the user asks a follow-up question, use the conversation history to keep the answer on the same topic. "
+                    "If the user is asking what to do next, corrected_answer should explain the next small action in plain words. "
                     "The corrected_answer should remove unsupported or off-intent details, even if those details are factually true. "
                     "If the question asks for a crafting recipe, corrected_answer should preserve a numbered slot explanation when the recipe uses a 3x3 crafting table. "
                     "Use the slot layout 1 2 3 / 4 5 6 / 7 8 9, list occupied slots, and do not invent ingredients unsupported by the context. "
@@ -200,6 +224,7 @@ def validate_answer(question: str, context: str, answer: str) -> dict:
             {
                 "role": "user",
                 "content": (
+                    f"Conversation history:\n{conversation_history or '(none)'}\n\n"
                     f"Question:\n{question}\n\n"
                     f"Reference context:\n{context}\n\n"
                     f"Draft answer:\n{answer}"
@@ -552,7 +577,7 @@ def select_passages(
     return ranked[:max_passages]
 
 
-def rewrite_search_query(question: str) -> str:
+def rewrite_search_query(question: str, conversation_history: str = "") -> str:
     payload = {
         "model": MODEL_NAME,
         "messages": [
@@ -566,13 +591,21 @@ def rewrite_search_query(question: str) -> str:
                     "Keep important item, mob, biome, structure, version, and mechanic names. "
                     "Prefer Minecraft Wiki source-document terms such as block, item, mob, biome, "
                     "structure, mechanics, generation, loot, trading, or enchanting. "
+                    "If the question is a short follow-up such as 'then?', 'how do I get it?', or "
+                    "'what should I do with this?', use the conversation history to resolve what "
+                    "the user is referring to before writing the query. "
+                    "For beginner progression questions, prefer practical source terms such as "
+                    "obtaining, crafting, breaking, log, planks, sticks, crafting table, and wooden tools. "
                     "Avoid broad tutorial or beginner-guide wording unless the user asks for a tutorial. "
                     "Return only the search query. Do not answer the question."
                 )
             },
             {
                 "role": "user",
-                "content": question,
+                "content": (
+                    f"Conversation history:\n{conversation_history or '(none)'}\n\n"
+                    f"Current question:\n{question}"
+                ),
             },
         ],
         "temperature": 0.1,
@@ -597,8 +630,8 @@ def rewrite_search_query(question: str) -> str:
     return rewritten_query or question
 
 
-def search_minecraft_info(query: str) -> dict:
-    rewritten_query = rewrite_search_query(query)
+def search_minecraft_info(query: str, conversation_history: str = "") -> dict:
+    rewritten_query = rewrite_search_query(query, conversation_history)
     search_queries = [
         (
             f"site:minecraft.wiki/w {rewritten_query} "
@@ -689,15 +722,16 @@ def deterministic_validation(question: str, context: str, answer: str) -> dict |
 
     return None
 
-def generate_answer(question: str, context: str) -> str:
+def generate_answer(question: str, context: str, conversation_history: str = "") -> str:
     payload = {
         "model": MODEL_NAME,
         "messages": [
             {
                 "role": "system",
                 "content": (
-                    "You are a knowledgeable Minecraft expert assistant. "
-                    "Your tone is polite but approachable. "
+                    "You are a kind Minecraft coach for a brand-new player. "
+                    "Your tone is warm, patient, and encouraging. "
+                    "Do not sound blunt, annoyed, sarcastic, or overly terse. "
                     "Answer only for Minecraft Java Edition vanilla survival "
                     "unless the user explicitly asks about another edition or spin-off. "
                     "Ignore Minecraft Dungeons, Minecraft Legends, Bedrock Edition, "
@@ -706,10 +740,15 @@ def generate_answer(question: str, context: str) -> str:
                     "Base the answer on the reference information. "
                     "If the reference information is insufficient, say that reliable context was not found "
                     "instead of guessing. "
+                    "Use the conversation history to understand follow-up words like "
+                    "'then', 'it', 'this', 'that', or 'this tree'. "
+                    "If the user is confused, slow down and explain the next small action clearly. "
                     "Use the following reference information to answer accurately:\n\n"
                     "Answer only the user's direct intent. "
-                    "Explain like the user is a beginner Minecraft Java Edition survival player. "
-                    "Use simple words and clear next steps, but keep Minecraft terms unchanged. "
+                    "Explain like the user is a beginner Minecraft Java Edition survival player who may not know basic terms yet. "
+                    "Use simple words, clear next steps, and a friendly first sentence, but keep Minecraft terms unchanged. "
+                    "Prefer 'First...', 'Then...', and 'After that...' when the answer is a process. "
+                    "When helpful, briefly explain why the step matters. "
                     "If the user asks for a crafting recipe that uses a 3x3 crafting table, explain it with numbered crafting slots. "
                     "Use this slot layout: 1 2 3 / 4 5 6 / 7 8 9. "
                     "List only occupied slots and say that other slots should be empty. "
@@ -718,14 +757,17 @@ def generate_answer(question: str, context: str) -> str:
                     "Beginner guidance is allowed when it explains the direct answer, but avoid advanced optimization or unrelated tips. "
                     "If the user asks where to find something, focus on location, conditions, and search method only. "
                     "If the user asks how to obtain or mine something, then include required tools or drop-related details only when directly necessary. "
-                    "Keep the answer beginner-friendly and practical, usually 2-5 short sentences. "
+                    "Keep the answer beginner-friendly and practical, usually 3-5 short sentences. "
                     
                     f"{context}"
                 )
             },
             {
                 "role": "user",
-                "content": question
+                "content": (
+                    f"Conversation history:\n{conversation_history or '(none)'}\n\n"
+                    f"Current question:\n{question}"
+                )
             }
         ],
         "temperature": 0.6,
@@ -763,8 +805,9 @@ def health():
 
 @app.post("/chat")
 def chat(body: Question):
+    conversation_history = format_conversation_history(body.history)
     # 1. 웹 검색
-    search = search_minecraft_info(body.question)
+    search = search_minecraft_info(body.question, conversation_history)
     context = search["context"]
     if not context.strip():
         validation = deterministic_validation(body.question, context, "")
@@ -780,8 +823,8 @@ def chat(body: Question):
         }
 
     # 2. 파인튜닝 모델로 답변 생성
-    draft_answer = generate_answer(body.question, context)
-    validation = validate_answer(body.question, context, draft_answer)
+    draft_answer = generate_answer(body.question, context, conversation_history)
+    validation = validate_answer(body.question, context, draft_answer, conversation_history)
     answer = validation["corrected_answer"]
 
     return {
