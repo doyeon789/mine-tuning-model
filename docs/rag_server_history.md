@@ -25,6 +25,8 @@
 | 7 | `cef4c53` | hybrid retriever 구조 추가, 임베딩 rerank 옵션 추가 | 키워드 랭킹과 semantic similarity를 함께 사용할 수 있게 준비 |
 | 8 | `54cfae3` | passage chunk overlap 추가 | 긴 본문을 자를 때 핵심 문맥이 앞뒤로 끊기는 문제 완화 |
 | 9 | `5221bd8` | RRF rerank 추가 | keyword, source, semantic 순위를 안정적으로 결합 |
+| 10 | `6b056f8` | rag upgrade PR merge | 최신 retriever 구조와 히스토리 문서를 main에 반영 |
+| 11 | `b46874d` | 초보 친화 프롬프팅 강화 | 직접 의도에 맞는 짧은 답변과 제작법 슬롯 설명을 안정화 |
 
 ## 답변 변화
 
@@ -171,6 +173,30 @@ Look for diamond ore in caves or by mining at y-levels -58 to -64 in 1.18+ or y-
 - Tavily 검색 순위가 좋은 source와 질문 키워드에 잘 맞는 passage를 균형 있게 선택한다.
 - semantic rerank가 켜졌을 때도 점수 스케일 차이 때문에 순위가 흔들리는 문제를 줄인다.
 
+### 초보 친화 프롬프팅
+
+커밋:
+
+```text
+b46874d chore: 초보 친화적으로 프롬포팅
+```
+
+변경 내용:
+
+- 답변 톤을 초보 Minecraft Java Edition survival 플레이어 기준으로 조정했다.
+- 직접 의도를 설명하는 데 필요한 내용은 쉽게 풀어 쓰되, Minecraft 고유 용어는 그대로 유지한다.
+- 답변 길이를 보통 2-5개의 짧은 문장으로 제한한다.
+- 제작법 질문이 3x3 crafting table을 요구하면 슬롯 번호로 설명한다.
+- 슬롯 레이아웃은 `1 2 3 / 4 5 6 / 7 8 9`를 사용하고, 채워야 하는 슬롯과 빈 슬롯을 구분한다.
+- 위치 질문은 위치, 조건, 찾는 방법에 집중한다.
+- 획득이나 채굴 질문은 직접 필요한 경우에만 도구나 드롭 관련 정보를 포함한다.
+
+기대 효과:
+
+- 초보자가 바로 따라 할 수 있는 답변을 만든다.
+- 조합법 답변에서 재료 배치를 더 명확히 전달한다.
+- 관련은 있지만 질문 의도 밖인 고급 최적화나 부가 팁이 섞이는 문제를 줄인다.
+
 ## 현재 최종 답변 목표
 
 `How do I find diamonds ?` 같은 위치 질문에는 다음처럼 짧고 목적에 맞는 답변을 목표로 한다.
@@ -190,6 +216,14 @@ Look for diamond ore in the Overworld between Y=14 and Y=-63 in Minecraft 1.18+,
 - 장비 최적화
 - 질문과 직접 관련 없는 일반 전략
 
+`How do I craft an iron pickaxe?` 같은 제작법 질문에는 다음처럼 슬롯 기반으로 답변하는 것을 목표로 한다.
+
+최종 답변:
+
+```text
+Use a 3x3 crafting table. Put iron ingots in slots 1, 2, and 3, and sticks in slots 5 and 8. Leave the other slots empty.
+```
+
 ## 현재 구조
 
 현재 `rag_server.py`의 주요 흐름은 다음과 같다.
@@ -208,6 +242,12 @@ Look for diamond ore in the Overworld between Y=14 and Y=-63 in Minecraft 1.18+,
 12. SGLang으로 초안 답변 생성
 13. SGLang으로 근거 검증 및 off-intent detail 제거
 14. 최종 `answer` 반환
+
+답변 생성/검증 단계는 현재 다음 규칙도 함께 적용한다.
+
+- 초보자에게 친절한 2-5문장 답변을 우선한다.
+- 직접 질문한 범위 밖의 장비 최적화, 인챈트, 드롭률, 전략 팁은 제외한다.
+- 3x3 제작법은 슬롯 번호로 설명한다.
 
 ## 다음 개선 후보
 
